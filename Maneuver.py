@@ -90,10 +90,16 @@ class Maneuver:
 
 
     def getNodes(self):
-       return self.__nodes
+        """
+        :return: Returns the list of States that describe the Maneuver
+        """
+        return self.__nodes
 
 
     def getTotalTime(self):
+        """
+        :return: Returns the total time the Maneuver needed
+        """
         return self.__nodes[-1].getTime()
 
 
