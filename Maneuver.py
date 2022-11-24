@@ -141,11 +141,20 @@ class Maneuver:
         :param factor: The resizing factor in percent
         :return: the resized Maneuver
         """
+        tmp = [self.__nodes[0]] # der erste Punkt wird übernommen
+        for index in range(1, len(self.__nodes)):
+            node = self.__nodes[index]
+            prev_node = self.__nodes[index - 1]
+            x, y, z = node.getX() - prev_node.getX(), node.getY() - prev_node.getY(), node.getZ() - prev_node.getZ()
+            x, y, z = x + (factor / 100) * x, y + (factor / 100) * y, z + (factor / 100) * z # den Abstand der Vektoren anhand factor anpassen
 
+            tmp_x, tmp_y, tmp_z = tmp[index - 1].getCoordinates()
+            tmp.append(State(tmp_x + x, tmp_y + y, tmp_z + z, node.getRotation(), node.getTime()))
+        return Maneuver(tmp)
 
 
     def getTotalDistance(self):
         tmp = 0
-        for index in range(len(self.__nodes)-1):
+        for index in range(len(self.__nodes)):
             tmp += math.fabs(self.__nodes[index] - self.__nodes[index + 1])
         return tmp
