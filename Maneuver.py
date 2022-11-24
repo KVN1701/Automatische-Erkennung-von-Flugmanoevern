@@ -64,6 +64,7 @@ class State:
                    self.__time == other.__time
         return False
 
+
     def randomize(self, max_inv): #TODO: Check if step is needed
         """
         Replaces the State to a random position by a maximum value of max_inv
@@ -78,7 +79,7 @@ class State:
 
 
 class Maneuver:
-    def __init__(self, nodes):
+    def __init__(self, nodes: list):
         """
         Creates an instance of a Maneuver. The position of the plane is defined
         by a list of Vectors containing the plane's position (maybe also other information).
@@ -96,10 +97,11 @@ class Maneuver:
         return self.__nodes[-1].getTime()
 
 
-    def randomize(self, max_inv):
+    def randomize(self, max_inv: float=10):
         """
         Returns a random generated Maneuver. Every point is moved in a random distance from
         it's original location depending on max_inv.
+
         :param max_inv: maximal distance in meters
         :return: Maneuver
         """
@@ -110,7 +112,7 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def turn(self, angle=random.randrange(0, 360 * 2) / 2): # Zufällige Gradzahl in 0.5er Schritten
+    def turn(self, angle: float=random.randrange(0, 360 * 2) / 2): # Zufällige Gradzahl in 0.5er Schritten
         """
         Turns the Maneuver by a random degree (0° to 360°)
 
@@ -134,7 +136,7 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def strech(self, factor=random.randrange(-20, 20) / 2): # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
+    def stretch(self, factor: float=random.randrange(-20, 20) / 2): # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
         """
         Sretches or shrinks a Maneuver by a given factor.
 
@@ -151,6 +153,26 @@ class Maneuver:
             tmp_x, tmp_y, tmp_z = tmp[index - 1].getCoordinates()
             tmp.append(State(tmp_x + x, tmp_y + y, tmp_z + z, node.getRotation(), node.getTime()))
         return Maneuver(tmp)
+
+
+    def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None):
+        """
+        Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
+
+        :param amount: The amount of random Maneuvers, that will be created
+        :param angle: The angle in which the Maneuvers should be turned
+        :param factor: The factor by whicht the Maneuvers should be enlarged or shortened
+        :param max_inv: the max amount of movement of the points
+        :return: a list of Maneuvers
+        """
+        tmp = []
+        for _ in range(amount):
+            m = self.stretch(factor) if factor is not None else self.stretch()
+            m = m.turn(angle) if angle is not None else m.turn()
+            m = m.randomize(max_inv) if max_inv is not None else m.randomize()
+            tmp.append(m)
+        return tmp
+
 
 
     def getTotalDistance(self):
