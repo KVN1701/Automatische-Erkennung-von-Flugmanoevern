@@ -64,10 +64,9 @@ class State:
                    self.__time == other.__time
         return False
 
-
-    def randomize(self, max_inv): #TODO: Check if step is needed
+    def randomize(self, max_inv):  # TODO: Check if step is needed
         """
-        Replaces the State to a random position by a maximum value of max_inv
+        Replaces the State to a random position by a maximum value of max_inv.
 
         :param max_inv: maximal distance in meters
         :return: the position of the new State
@@ -88,13 +87,11 @@ class Maneuver:
         """
         self.__nodes = nodes
 
-
     def getNodes(self):
         """
         :return: Returns the list of States that describe the Maneuver
         """
         return self.__nodes
-
 
     def getTotalTime(self):
         """
@@ -102,8 +99,7 @@ class Maneuver:
         """
         return self.__nodes[-1].getTime()
 
-
-    def randomize(self, max_inv: float=10):
+    def randomize(self, max_inv: float = 10):
         """
         Returns a random generated Maneuver. Every point is moved in a random distance from
         it's original location depending on max_inv.
@@ -114,11 +110,10 @@ class Maneuver:
         tmp = []
         for n in self.__nodes:
             tmp.append(n.randomize(max_inv))
-            #TODO: set rotation in state
+            # TODO: set rotation in state
         return Maneuver(tmp)
 
-
-    def turn(self, angle: float=random.randrange(0, 360 * 2) / 2): # Zufällige Gradzahl in 0.5er Schritten
+    def turn(self, angle: float = random.randrange(0, 360 * 2) / 2):  # Zufällige Gradzahl in 0.5er Schritten
         """
         Turns the Maneuver by a random degree (0° to 360°)
 
@@ -126,11 +121,12 @@ class Maneuver:
         :return: A new, turned Maneuver
         """
         # z-Achse ist die vertikale, y und x müssen für eine Rotation angepasst werden
-        rad_angle = (math.pi / 180) * angle # umrechnen in Radiant
+        rad_angle = (math.pi / 180) * angle  # umrechnen in Radiant
 
         headx, heady, headz = self.__nodes[0].getCoordinates()
         tailx, taily, tailz = self.__nodes[-1].getCoordinates()
-        c_x, c_y, _ = ((headx + tailx) / 2, (heady + taily) / 2, (headz + tailz) / 2) # Punkt um den rotiert werden soll (Mittelpunkt)
+        c_x, c_y, _ = (
+        (headx + tailx) / 2, (heady + taily) / 2, (headz + tailz) / 2)  # Punkt um den rotiert werden soll (Mittelpunkt)
 
         tmp = []
         for n in self.__nodes:
@@ -138,28 +134,29 @@ class Maneuver:
             # Anwenden der Rotationsmatrix
             tmp_x = (math.cos(rad_angle) * (n_x - c_x) + math.sin(rad_angle) * (n_y - c_y)) + c_x
             tmp_y = (-math.sin(rad_angle) * (n_x - c_x) + math.cos(rad_angle) * (n_y - c_y)) + c_y
-            tmp.append(State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime())) #TODO: Rotation muss noch geupdated werden
+            tmp.append(
+                State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime()))  # TODO: Rotation muss noch geupdated werden
         return Maneuver(tmp)
 
-
-    def stretch(self, factor: float=random.randrange(-20, 20) / 2): # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
+    def stretch(self, factor: float = random.randrange(-20,
+                                                       20) / 2):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
         """
         Sretches or shrinks a Maneuver by a given factor.
 
         :param factor: The resizing factor in percent
         :return: the resized Maneuver
         """
-        tmp = [self.__nodes[0]] # der erste Punkt wird übernommen
+        tmp = [self.__nodes[0]]  # der erste Punkt wird übernommen
         for index in range(1, len(self.__nodes)):
             node = self.__nodes[index]
             prev_node = self.__nodes[index - 1]
             x, y, z = node.getX() - prev_node.getX(), node.getY() - prev_node.getY(), node.getZ() - prev_node.getZ()
-            x, y, z = x + (factor / 100) * x, y + (factor / 100) * y, z + (factor / 100) * z # den Abstand der Vektoren anhand factor anpassen
+            x, y, z = x + (factor / 100) * x, y + (factor / 100) * y, z + (
+                      factor / 100) * z  # den Abstand der Vektoren anhand factor anpassen
 
             tmp_x, tmp_y, tmp_z = tmp[index - 1].getCoordinates()
             tmp.append(State(tmp_x + x, tmp_y + y, tmp_z + z, node.getRotation(), node.getTime()))
         return Maneuver(tmp)
-
 
     def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None):
         """
@@ -178,8 +175,6 @@ class Maneuver:
             m = m.randomize(max_inv) if max_inv is not None else m.randomize()
             tmp.append(m)
         return tmp
-
-
 
     def getTotalDistance(self):
         tmp = 0
