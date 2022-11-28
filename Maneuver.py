@@ -21,39 +21,21 @@ class State:
         self.__time = time
 
     def getX(self):
-        """
-        :return: returns the x coordinate saved in the State
-        """
         return self.__x
 
     def getY(self):
-        """
-        :return: returns the y coordinate saved in the State
-        """
         return self.__y
 
     def getZ(self):
-        """
-        :return: returns the z coordinate saved in the State
-        """
         return self.__z
 
     def getCoordinates(self):
-        """
-        :return: returns the coordinates saved in the State
-        """
         return self.__x, self.__y, self.__z
 
     def getRotation(self):
-        """
-        :return: returns the rotation saved in the State
-        """
         return self.__rot
 
     def getTime(self):
-        """
-        :return: returns the time saved in the State
-        """
         return self.__time
 
     def __eq__(self, other):
@@ -87,17 +69,14 @@ class Maneuver:
         """
         self.__nodes = nodes
 
+
     def getNodes(self):
-        """
-        :return: Returns the list of States that describe the Maneuver
-        """
         return self.__nodes
 
+
     def getTotalTime(self):
-        """
-        :return: Returns the total time the Maneuver needed
-        """
         return self.__nodes[-1].getTime()
+
 
     def randomize(self, max_inv: float = 10):
         """
@@ -112,6 +91,7 @@ class Maneuver:
             tmp.append(n.randomize(max_inv))
             # TODO: set rotation in state
         return Maneuver(tmp)
+
 
     def turn(self, angle: float = random.randrange(0, 360 * 2) / 2):  # Zufällige Gradzahl in 0.5er Schritten
         """
@@ -138,6 +118,7 @@ class Maneuver:
                 State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime()))  # TODO: Rotation muss noch geupdated werden
         return Maneuver(tmp)
 
+
     def stretch(self, factor: float = random.randrange(-20,
                                                        20) / 2):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
         """
@@ -158,6 +139,7 @@ class Maneuver:
             tmp.append(State(tmp_x + x, tmp_y + y, tmp_z + z, node.getRotation(), node.getTime()))
         return Maneuver(tmp)
 
+
     def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None):
         """
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
@@ -175,6 +157,7 @@ class Maneuver:
             m = m.randomize(max_inv) if max_inv is not None else m.randomize()
             tmp.append(m)
         return tmp
+
 
     def getTotalDistance(self):
         tmp = 0
