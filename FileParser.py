@@ -1,4 +1,4 @@
-from Maneuver import Maneuver
+from Maneuver import Maneuver, State
 
 
 def parse_file(file_name: str):
@@ -16,7 +16,7 @@ def parse_file(file_name: str):
     for line in string_data:
         line = line.replace("(", "")
         line = line.replace(")", "")
-        tmp = [int(val) for val in line.split(", ")]
-        coordinates.append((tmp[0], tmp[1],tmp[2]))
+        tmp = [float(val) for val in line.split(", ")]
+        coordinates.append(State(tmp[0], tmp[2],tmp[1])) # has to be switched, because unity has a different coord system
     return Maneuver(coordinates)
 

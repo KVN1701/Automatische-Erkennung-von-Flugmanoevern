@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from Maneuver import Maneuver, State
+from FileParser import parse_file
 
 
 def plot(maneuver):
@@ -14,7 +15,7 @@ def plot(maneuver):
             [i.getZ() for i in maneuver.getNodes()])
 
 
-maneuver = Maneuver([State(1, 2, 3), State(4, 5, 6)])
+maneuver = parse_file("Looping_01")
 xs, ys, zs = plot(maneuver)
 
 fig = plt.figure()
