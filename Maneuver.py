@@ -78,6 +78,18 @@ class Maneuver:
         return self.__nodes[-1].getTime()
 
 
+    def getCenter(self):
+        min_x, min_y, min_z, max_x, max_y, max_z = 0, 0, 0, 0, 0, 0
+        for n in self.__nodes:
+            if n.getX() < min_x: min_x = n.getX()
+            if n.getX() > max_x: max_x = n.getX()
+            if n.getY() < min_y: min_y = n.getY()
+            if n.getY() > max_y: max_y = n.getY()
+            if n.getZ() < min_z: min_z = n.getZ()
+            if n.getZ() > max_z: max_z = n.getZ()
+        return (min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2
+
+
     def randomize(self, max_inv: float = 10):
         """
         Returns a random generated Maneuver. Every point is moved in a random distance from
@@ -119,8 +131,7 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def stretch(self, factor: float = random.randrange(-20,
-                                                       20) / 2):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
+    def scale(self, factor: float = random.randrange(-20, 20) / 2):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
         """
         Sretches or shrinks a Maneuver by a given factor.
 
@@ -140,6 +151,23 @@ class Maneuver:
         return Maneuver(tmp)
 
 
+    def stretch(self, factor: float = random.randrange(-20, 20) / 2):
+        # TODO: Methode erstellen, die den Graphen staucht und streckt
+        pass
+
+
+    def move(self, distance_x: float = random.randrange(-200, 200) / 2,
+             distance_y: float = random.randrange(-200, 200) / 2,
+             distance_z: float = random.randrange(-200, 200) / 2):
+        # TODO: Methode erstellen, die den Graphen in eine beliebige Richtung verschiebt
+        pass
+
+
+    def mirror(self):
+        #TODO: Methode, die den Graphen spiegelt
+        pass
+
+
     def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None):
         """
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
@@ -152,7 +180,8 @@ class Maneuver:
         """
         tmp = []
         for _ in range(amount):
-            m = self.stretch(factor) if factor is not None else self.stretch()
+            # TODO: neu erstellte Methoden einfügen
+            m = self.scale(factor) if factor is not None else self.scale()
             m = m.turn(angle) if angle is not None else m.turn()
             m = m.randomize(max_inv) if max_inv is not None else m.randomize()
             tmp.append(m)
