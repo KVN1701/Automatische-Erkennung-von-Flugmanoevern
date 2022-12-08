@@ -16,13 +16,23 @@ def plot(maneuver):
 
 
 maneuver = parse_file("Looping_01")
+#maneuver.getNodes().append(State(0, 0, 0))
 xs, ys, zs = plot(maneuver)
+
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ln, = ax.plot(xs, ys, zs)
 ax.legend()
 ax.set_aspect('equal', adjustable='box')
+
+
+m = maneuver.mirror()
+a, b, c = plot(m)
+ax.plot(a, b, c)
+# for elem in maneuver.generate_maneuvers(3):
+#     xs, ys, zs = plot(elem)
+#     ln, = ax.plot(xs, ys, zs)
 
 lim_min = min(min(xs), min(ys), min(zs))
 lim_max = max(max(xs), max(ys), max(zs))
@@ -39,7 +49,7 @@ ax.set_zlim3d(lim_min, lim_max)
 #     ax.set_ylim3d(lim_min, lim_max)
 #     ax.set_zlim3d(lim_min, lim_max)
 #
-#     maneuver = maneuver.turn(10)
+#     maneuver = maneuver.scale()
 #     xs, ys, zs = plot(maneuver)
 #
 #     ln, = ax.plot(xs, ys, zs)
