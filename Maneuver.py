@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 
 class State:
@@ -57,6 +58,12 @@ class State:
         y = self.__y + random.uniform(-max_inv, max_inv)
         z = self.__z + random.uniform(-max_inv, max_inv)
         return State(x, y, z, self.__rot, self.__time)
+    
+    
+    def get_numpy_array(self):
+        # return np.array([self.__x, self.__y, self.__z, self.__rot, self.__time])
+        return np.array([self.__x, self.__y, self.__z])
+
 
 
 class Maneuver:
@@ -101,10 +108,7 @@ class Maneuver:
         :param max_inv: maximal distance in meters
         :return: Maneuver
         """
-        tmp = []
-        for n in self.__nodes:
-            tmp.append(n.randomize(max_inv))
-            # TODO: set rotation in state
+        tmp = [n.randomize(max_inv) for n in self.__nodes]
         return Maneuver(tmp)
 
 
@@ -240,3 +244,11 @@ class Maneuver:
         for index in range(len(self.__nodes)):
             tmp += math.fabs(self.__nodes[index] - self.__nodes[index + 1])
         return tmp
+
+
+    def get_numpy_array(self):
+        """
+        :return: a numpy array holding the data for keras to process.
+        """
+        return np.array([state.get_numpy_array() for state in self.__nodes])
+            
