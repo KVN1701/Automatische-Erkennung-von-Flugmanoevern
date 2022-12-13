@@ -216,7 +216,7 @@ class Maneuver:
         return self
 
 
-    def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None):
+    def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None) -> list:
         """
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
 
