@@ -75,6 +75,7 @@ class Maneuver:
         :param nodes: list of States defining the entire graph to symbolise the maneuver.
         """
         self.__nodes = nodes
+        self.__length = len(nodes)
 
 
     def getNodes(self):
@@ -251,4 +252,8 @@ class Maneuver:
         :return: a numpy array holding the data for keras to process.
         """
         return np.array([state.get_numpy_array() for state in self.__nodes])
+    
+    
+    def __len__(self):
+        return self.__length
             
