@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import *
+from keras.layers import Normalization
 from FileParser import parse_file
 
 """
@@ -62,21 +62,12 @@ normalizer = Normalization(axis=-1)
 normalizer.adapt(training_data)
 
 training_data = normalizer(training_data)
-
-
 print(training_data)
 
 
-
-# normalizing the training labels
-# normalizer2 = keras.layers.Normalization(axis=-1)
-# normalizer2.adapt(training_labels)
-
-# training_labels = normalizer2(training_labels)
-
 # * test prints
-print("var: %.4f" % np.var(training_data))
-print("mean: %.4f" % np.mean(training_data))
+# print("var: %.4f" % np.var(training_data))
+# print("mean: %.4f" % np.mean(training_data))
 print(training_data.shape)
 
 
@@ -87,3 +78,7 @@ model = keras.Sequential([
 ])
 
 model.summary()
+
+model.compile()
+
+model.fit(x=training_data, y=training_labels)

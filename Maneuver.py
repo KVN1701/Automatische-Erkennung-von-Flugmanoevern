@@ -1,5 +1,5 @@
 import math
-import random
+from random import randrange, choice, uniform
 import numpy as np
 
 
@@ -54,9 +54,9 @@ class State:
         :param max_inv: maximal distance in meters
         :return: the position of the new State
         """
-        x = self.__x + random.uniform(-max_inv, max_inv)
-        y = self.__y + random.uniform(-max_inv, max_inv)
-        z = self.__z + random.uniform(-max_inv, max_inv)
+        x = self.__x + uniform(-max_inv, max_inv)
+        y = self.__y + uniform(-max_inv, max_inv)
+        z = self.__z + uniform(-max_inv, max_inv)
         return State(x, y, z, self.__rot, self.__time)
     
     
@@ -75,7 +75,6 @@ class Maneuver:
         :param nodes: list of States defining the entire graph to symbolise the maneuver.
         """
         self.__nodes = nodes
-        self.__length = len(nodes)
 
 
     def getNodes(self):
@@ -101,7 +100,7 @@ class Maneuver:
         return (min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2
 
 
-    def randomize(self, max_inv: float = round(random.uniform(0, 1.5), 2)):
+    def randomize(self, max_inv: float = round(uniform(0, 1.75), 2)):
         """
         Returns a random generated Maneuver. Every point is moved in a random distance from
         it's original location depending on max_inv.
@@ -113,7 +112,7 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def turn(self, angle: float = random.randrange(0, 360 * 4) / 4):  # Zufällige Gradzahl in 0.5er Schritten
+    def turn(self, angle: float = randrange(0, 360 * 4) / 4):  # Zufällige Gradzahl in 0.5er Schritten
         """
         Turns the Maneuver by a random degree (0° to 360°)
 
@@ -137,7 +136,7 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def scale(self, factor: float = random.randrange(-40, 40) / 4):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
+    def scale(self, factor: float = randrange(-40, 40) / 4):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
         """
         Sretches or shrinks a Maneuver by a given factor.
 
@@ -157,9 +156,9 @@ class Maneuver:
 
 
     def stretch(self,
-                factor_x: float = random.randrange(-20, 20) / 2,
-                factor_y: float = random.randrange(-20, 20) / 2,
-                factor_z: float = random.randrange(-20, 20) / 2):
+                factor_x: float = randrange(-40, 40) / 2,
+                factor_y: float = randrange(-40, 40) / 2,
+                factor_z: float = randrange(-40, 40) / 2):
         """
         Streches the Maneuver in x, y and z direction.
 
@@ -179,9 +178,10 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def move(self, distance_x: float = random.randrange(-200, 200) / 2,
-             distance_y: float = random.randrange(-200, 200) / 2,
-             distance_z: float = random.randrange(-200, 200) / 2):
+    def move(self, 
+             distance_x: float = randrange(-800, 800) / 2,
+             distance_y: float = randrange(-800, 800) / 2,
+             distance_z: float = randrange(-800, 800) / 2):
         """
         Moves the graph in x, y and z direction.
         
@@ -217,7 +217,19 @@ class Maneuver:
         return self
 
 
-    def generate_maneuvers(self, amount: int, max_inv=None, factor=None, angle=None) -> list:
+    def generate_maneuvers(self, 
+                           amount: int, 
+                           max_inv=None, 
+                           factor=None, 
+                           angle=None, 
+                           mirror=True, 
+                           dist_move_x=None, 
+                           dist_move_y=None, 
+                           dist_move_z=None,
+                           dist_stretch_x=None,
+                           dist_stretch_y=None,
+                           dist_stretch_z=None,
+                ) -> list:
         """
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
 
@@ -229,13 +241,23 @@ class Maneuver:
         """
         tmp = []
         for _ in range(amount):
-            rand_angle = random.randrange(0, 360 * 4) / 4
-            rand_inv = round(random.uniform(0, 1.5), 2)
-            rand_scale = random.randrange(-40, 40) / 4
+            rand_angle = randrange(0, 360 * 4) / 4
+            rand_inv = round(uniform(0, 1.75), 2)
+            rand_scale = randrange(-40, 40) / 4
+            mirror = choice([True, False]) if mirror else False
+            move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
+            stretch_x, stretch_y, stretch_z = randrange(-40, 40) / 2, randrange(-40, 40) / 2, randrange(-40, 40) / 2
+            
+            move_defined = move_x != None and move_y != None and move_z != None
+            stretch_defined = stretch_x != None and stretch_y != None and stretch_z != None
+            
             # TODO: neu erstellte Methoden einfügen
             m = self.scale(factor) if factor is not None else self.scale(rand_scale)
             m = m.turn(angle) if angle is not None else m.turn(rand_angle)
             m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
+            m = m.mirror(mirror)
+            m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
+            m = m.stretch(stretch_x, stretch_y, stretch_z) if stretch_defined else m.stretch(dist_stretch_x, dist_stretch_y, dist_stretch_z)
             tmp.append(m)
         return tmp
 
@@ -255,5 +277,4 @@ class Maneuver:
     
     
     def __len__(self):
-        return self.__length
-            
+        return len(self.__nodes)
