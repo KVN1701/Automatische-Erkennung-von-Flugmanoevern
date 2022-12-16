@@ -65,7 +65,6 @@ class State:
         return np.array([self.__x, self.__y, self.__z])
 
 
-
 class Maneuver:
     def __init__(self, nodes: list):
         """
@@ -251,7 +250,6 @@ class Maneuver:
             move_defined = move_x != None and move_y != None and move_z != None
             stretch_defined = stretch_x != None and stretch_y != None and stretch_z != None
             
-            # TODO: neu erstellte Methoden einfügen
             m = self.scale(factor) if factor is not None else self.scale(rand_scale)
             m = m.turn(angle) if angle is not None else m.turn(rand_angle)
             m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
@@ -278,3 +276,8 @@ class Maneuver:
     
     def __len__(self):
         return len(self.__nodes)
+    
+    
+    # ! temporär zur Vereinfachung des Problems
+    def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
+        return [state.getX() for state in self.__nodes]
