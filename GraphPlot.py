@@ -29,9 +29,9 @@ ax.set_aspect('equal', adjustable='box')
 lim_min = min(min(xs), min(ys), min(zs))
 lim_max = max(max(xs), max(ys), max(zs))
 
-m = maneuver.mirror()
-a, b, c = plot(m)
-ax.plot(a, b, c)
+# m = maneuver.stretch(0, 0, 100)
+# a, b, c = plot(m)
+# ax.plot(a, b, c)
 
 for elem in maneuver.generate_maneuvers(5):
      xs, ys, zs = plot(elem)

@@ -20,6 +20,10 @@ class State:
         self.__z = z
         self.__rot = rot
         self.__time = time
+        
+        
+    def __str__(self) -> str:
+        return f'({self.__x}, {self.__y}, {self.__z}) Time: {self.__time}, Rotation: {self.__rot}'
 
 
     def getX(self):
@@ -108,6 +112,7 @@ class Maneuver:
             next_state.setTime(round(current_time, 4))
         self.__nodes = nodes
         self.__index = 0
+        self.__speed = initial_speed
 
 
     def __iter__(self):
@@ -195,9 +200,9 @@ class Maneuver:
 
 
     def stretch(self,
-                factor_x: float = randrange(180, 220) / 2,
-                factor_y: float = randrange(180, 220) / 2,
-                factor_z: float = randrange(180, 220) / 2): # zwischen 90% und 110% des ursprünglichen graphen
+                factor_x: float = randrange(-50, 50) / 2,
+                factor_y: float = randrange(-50, 50) / 2,
+                factor_z: float = randrange(-50, 50) / 2): # zwischen 75% und 125% des ursprünglichen graphen
         """
         Streches the Maneuver in x, y and z direction.
 
@@ -289,7 +294,7 @@ class Maneuver:
             rand_inv = round(uniform(0, 1.75), 2)
             mirror = choice([True, False]) if mirror else False
             move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
-            stretch_x, stretch_y, stretch_z = randrange(160, 240) / 2, randrange(160, 240) / 2, randrange(160, 240) / 2
+            stretch_x, stretch_y, stretch_z = randrange(-50, 50) / 2, randrange(-50, 50) / 2, randrange(-50, 50) / 2
             
             move_defined = move_x is not None and move_y is not None and move_z is not None
             stretch_defined = stretch_x is not None and stretch_y is not None and stretch_z is not None
@@ -304,10 +309,8 @@ class Maneuver:
 
 
     def getTotalDistance(self):
-        tmp = 0
-        for index in range(len(self.__nodes)):
-            tmp += math.fabs(self.__nodes[index] - self.__nodes[index + 1])
-        return tmp
+        last_element = self.__nodes[-1]
+        return round(last_element.getTime() * self.__speed, 1) # in Meters
 
 
     def get_numpy_array(self):
