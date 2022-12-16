@@ -84,7 +84,7 @@ class State:
     
     def get_distance_to_state(self, state) -> float: # returns the distance in meters
         x, y, z = self.__x - state.__x, self.__y - state.__y, self.__z - state.__z
-        return math.sqrt(x**2, y**2, z**2)
+        return math.sqrt(x**2 + y**2 + z**2)
         
 
 
@@ -105,8 +105,23 @@ class Maneuver:
             next_state = nodes[i + 1]
             time = current_state.get_distance_to_state(next_state) / initial_speed # t = s/v
             current_time += time
-            next_state.setTime(current_time)
+            next_state.setTime(round(current_time, 4))
         self.__nodes = nodes
+        self.__index = 0
+
+
+    def __iter__(self):
+        self.__index = 0
+        return self
+
+
+    def __next__(self):
+        if self.__index < len(self.__nodes):
+            result = self.__nodes[self.__index]
+            self.__index += 1
+            return result
+        else:
+            raise StopIteration
 
 
     def getNodes(self):
@@ -314,3 +329,9 @@ class Maneuver:
     # ! temporär zur Vereinfachung des Problems
     def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
         return [state.getX() for state in self.__nodes]
+    
+    
+    
+maneuver = Maneuver([State(0, 0, 0), State(1, 1, 1), State(2, 2, 2)])
+for state in maneuver:
+    print(state.getTime())
