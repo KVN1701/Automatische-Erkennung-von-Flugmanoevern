@@ -329,9 +329,3 @@ class Maneuver:
     # ! temporär zur Vereinfachung des Problems
     def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
         return [state.getX() for state in self.__nodes]
-    
-    
-    
-maneuver = Maneuver([State(0, 0, 0), State(1, 1, 1), State(2, 2, 2)])
-for state in maneuver:
-    print(state.getTime())
