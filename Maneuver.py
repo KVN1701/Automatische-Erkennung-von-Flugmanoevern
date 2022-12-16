@@ -4,7 +4,7 @@ import numpy as np
 
 
 class State:
-    def __init__(self, x, y, z, rot=None, time=None):
+    def __init__(self, x, y, z, rot=None, time=0):
         """
         Creates an instance of State. States represent the individual points of
         a maneuver.
@@ -21,23 +21,39 @@ class State:
         self.__rot = rot
         self.__time = time
 
+
     def getX(self):
         return self.__x
+
 
     def getY(self):
         return self.__y
 
+
     def getZ(self):
         return self.__z
+
 
     def getCoordinates(self):
         return self.__x, self.__y, self.__z
 
+
     def getRotation(self):
         return self.__rot
 
+
     def getTime(self):
         return self.__time
+    
+    
+    def setTime(self, value):
+        """
+        Set the time to a new value
+        
+        :param value: new time value in seconds
+        """
+        self.__time = value
+
 
     def __eq__(self, other):
         if isinstance(other, State):
@@ -46,6 +62,7 @@ class State:
                    self.__z == other.__z and \
                    self.__time == other.__time
         return False
+
 
     def randomize(self, max_inv):  # TODO: Check if step is needed
         """
@@ -63,16 +80,32 @@ class State:
     def get_numpy_array(self):
         # return np.array([self.__x, self.__y, self.__z, self.__rot, self.__time])
         return np.array([self.__x, self.__y, self.__z])
+    
+    
+    def get_distance_to_state(self, state) -> float: # returns the distance in meters
+        x, y, z = self.__x - state.__x, self.__y - state.__y, self.__z - state.__z
+        return math.sqrt(x**2, y**2, z**2)
+        
 
 
 class Maneuver:
-    def __init__(self, nodes: list):
+    def __init__(self, nodes: list, initial_speed=167): # ca. 600km/h
         """
         Creates an instance of a Maneuver. The position of the plane is defined
         by a list of Vectors containing the plane's position (maybe also other information).
 
         :param nodes: list of States defining the entire graph to symbolise the maneuver.
+        :param initial_speed: a speed value given in m/s to determine the time values of the states (speed could differ in generated intances of Maneuver)
         """
+        
+        # standard time value = 0, therefore nodes[0] can be dismissed
+        current_time = 0
+        for i in range(len(nodes) - 1):
+            current_state = nodes[i]
+            next_state = nodes[i + 1]
+            time = current_state.get_distance_to_state(next_state) / initial_speed # t = s/v
+            current_time += time
+            next_state.setTime(current_time)
         self.__nodes = nodes
 
 
