@@ -183,29 +183,21 @@ class Maneuver:
         return Maneuver(tmp)
 
 
-    def scale(self, factor: float = randrange(-40, 40) / 4):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
+    # ! not needed for the calculation of random maneuvers, because stretch does basically the same
+    def scale(self, factor: float = randrange(180, 220) / 2):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
         """
         Sretches or shrinks a Maneuver by a given factor.
 
         :param factor: The resizing factor in percent
         :return: the resized Maneuver
         """
-        tmp = [self.__nodes[0]]  # der erste Punkt wird übernommen
-        for index in range(1, len(self.__nodes)):
-            node = self.__nodes[index]
-            prev_node = self.__nodes[index - 1]
-            x, y, z = node.getX() - prev_node.getX(), node.getY() - prev_node.getY(), node.getZ() - prev_node.getZ()
-            x, y, z = x + (factor / 100) * x, y + (factor / 100) * y, z + (factor / 100) * z  # den Abstand der Vektoren anhand factor anpassen
-
-            tmp_x, tmp_y, tmp_z = tmp[index - 1].getCoordinates()
-            tmp.append(State(tmp_x + x, tmp_y + y, tmp_z + z, node.getRotation(), node.getTime()))
-        return Maneuver(tmp)
+        return self.stretch(factor, factor, factor)
 
 
     def stretch(self,
-                factor_x: float = randrange(-40, 40) / 2,
-                factor_y: float = randrange(-40, 40) / 2,
-                factor_z: float = randrange(-40, 40) / 2):
+                factor_x: float = randrange(180, 220) / 2,
+                factor_y: float = randrange(180, 220) / 2,
+                factor_z: float = randrange(180, 220) / 2): # zwischen 90% und 110% des ursprünglichen graphen
         """
         Streches the Maneuver in x, y and z direction.
 
@@ -220,7 +212,7 @@ class Maneuver:
             x = n.getX() - center_x # distance to the center (x-coordinate)
             y = n.getY() - center_y # distance to the center (y-coordinate)
             z = n.getZ() - center_z # distance to the center (z-coordinate)
-            x, y, z = x + (factor_x / 100) * x, y + (factor_y / 100) * y, z + (factor_z / 100) * z
+            x, y, z = n.getX() + (factor_x / 100) * x, n.getY() + (factor_y / 100) * y, n.getZ() + (factor_z / 100) * z
             tmp.append(State(x, y, z, n.getTime(), n.getRotation()))
         return Maneuver(tmp)
 
@@ -266,8 +258,7 @@ class Maneuver:
 
     def generate_maneuvers(self, 
                            amount: int, 
-                           max_inv=None, 
-                           factor=None, 
+                           max_inv=None,  
                            angle=None, 
                            mirror=True, 
                            dist_move_x=None, 
@@ -281,25 +272,29 @@ class Maneuver:
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
 
         :param amount: The amount of random Maneuvers, that will be created
-        :param angle: The angle in which the Maneuvers should be turned
-        :param factor: The factor by whicht the Maneuvers should be enlarged or shortened
         :param max_inv: the max amount of movement of the points
+        :param angle: The angle in which the Maneuvers should be turned
+        :param mirror: True if the Maneuver should be able to be mirrored (for some it is irrelevant)
+        :param dist_move_x: the distance the Maneuver should be moved (in x direction)
+        :param dist_move_y: the distance the Maneuver should be moved (in y direction)
+        :param dist_move_z: the distance the Maneuver should be moved (in y direction)
+        :param dist_stretch_x: the amount of stretch applied (in x direction)
+        :param dist_stretch_y: the amount of stretch applied (in y direction)
+        :param dist_stretch_z: the amount of stretch applied (in z direction)
         :return: a list of Maneuvers
         """
         tmp = []
         for _ in range(amount):
             rand_angle = randrange(0, 360 * 4) / 4
             rand_inv = round(uniform(0, 1.75), 2)
-            rand_scale = randrange(-40, 40) / 4
             mirror = choice([True, False]) if mirror else False
             move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
-            stretch_x, stretch_y, stretch_z = randrange(-40, 40) / 2, randrange(-40, 40) / 2, randrange(-40, 40) / 2
+            stretch_x, stretch_y, stretch_z = randrange(160, 240) / 2, randrange(160, 240) / 2, randrange(160, 240) / 2
             
-            move_defined = move_x != None and move_y != None and move_z != None
-            stretch_defined = stretch_x != None and stretch_y != None and stretch_z != None
-            
-            m = self.scale(factor) if factor is not None else self.scale(rand_scale)
-            m = m.turn(angle) if angle is not None else m.turn(rand_angle)
+            move_defined = move_x is not None and move_y is not None and move_z is not None
+            stretch_defined = stretch_x is not None and stretch_y is not None and stretch_z is not None
+
+            m = self.turn(angle) if angle is not None else self.turn(rand_angle)
             m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
             m = m.mirror(mirror)
             m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
