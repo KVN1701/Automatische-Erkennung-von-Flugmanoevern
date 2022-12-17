@@ -18,36 +18,34 @@ maneuvers = [
     parse_file("Looping_01").turn(90)
 ]
 
-x_train = [] 
-tmp = []
-for m in maneuvers:
-    tmp.extend(m.generate_maneuvers(train_amount))
-
-print(len(tmp))
-for m in tmp:
-        x_train.append(m.simplified_value())
+def generate_dataset(amount):
+    """
+    generates a dataset to train the Neural Network
+    
+    :param amount: the amount of training data
+    """
+    num_of_maneuvers = len(maneuvers)
+    x_dataset = []
+    tmp = []
+    for m in maneuvers:
+        tmp.extend(m.generate_maneuvers(amount))
         
-x_train = np.array(x_train, dtype=float)
-    
-y_train = [0 for _ in range(train_amount)]
-y_train.extend([1 for _ in range(train_amount)])
-print(len(y_train))
-y_train = np.array(y_train, dtype=int)
-
-# generate test values
-x_test = [] 
-tmp2 = []
-for m in maneuvers:
-    tmp2.extend(m.generate_maneuvers(test_amount))
-    
-for m in tmp2:
-        x_test.append(m.simplified_value())
+    for m in tmp:
+        x_dataset.append(m.simplified_value())
         
-x_test = np.array(x_test, dtype=float)
+    x_dataset = np.array(x_dataset, dtype=float)
     
-y_test = [0 for _ in range(test_amount)]
-y_test.extend([1 for _ in range(test_amount)])
-y_test = np.array(y_test, dtype=int)
+    y_dataset = []
+    for i in range(num_of_maneuvers):
+        y_dataset.extend([i for _ in range(amount)])
+        
+    y_dataset = np.array(y_dataset, dtype=int)
+    
+    return x_dataset, y_dataset
+    
+    
+x_train, y_train = generate_dataset(train_amount)
+x_test, y_test = generate_dataset(test_amount)
 
 
 
