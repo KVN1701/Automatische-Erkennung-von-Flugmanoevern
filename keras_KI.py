@@ -15,8 +15,12 @@ test_amount = 40
 
 maneuvers = [
     parse_file("Looping_01"),
-    parse_file("Looping_01").turn(90)
+    parse_file("JoJo_01")
 ]
+
+for maneuver in maneuvers:
+    maneuver.set_to_new_length(max([len(m) for m in maneuvers]))
+    
 
 def generate_dataset(amount):
     """
@@ -31,13 +35,13 @@ def generate_dataset(amount):
         tmp.extend(m.generate_maneuvers(amount))
         
     for m in tmp:
-        x_dataset.append(m.simplified_value())
+        x_dataset.extend(m.get_numpy_array())
         
     x_dataset = np.array(x_dataset, dtype=float)
     
     y_dataset = []
     for i in range(num_of_maneuvers):
-        y_dataset.extend([i for _ in range(amount)])
+        y_dataset.extend([i for _ in range(amount * len(maneuvers[i]))])
         
     y_dataset = np.array(y_dataset, dtype=int)
     
@@ -60,7 +64,7 @@ plt.draw()
 plt.close()
 
 
-print(x_train.shape)
+print("train shape: " + str(x_train.shape))
 
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))

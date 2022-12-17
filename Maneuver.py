@@ -4,7 +4,7 @@ import numpy as np
 
 
 class State:
-    def __init__(self, x, y, z, rot=None, time=0):
+    def __init__(self, x: float, y: float, z: float, rot: float=None, time: float=0):
         """
         Creates an instance of State. States represent the individual points of
         a maneuver.
@@ -323,6 +323,12 @@ class Maneuver:
     
     def __len__(self):
         return len(self.__nodes)
+    
+    
+    def set_to_new_length(self, total_length):
+        amount_new_elements = total_length - len(self)
+        for _ in range(amount_new_elements):
+            self.__nodes.append(State(0, 0, 0))
     
     
     # ! temporär zur Vereinfachung des Problems
