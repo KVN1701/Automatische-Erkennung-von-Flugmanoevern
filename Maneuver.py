@@ -68,7 +68,7 @@ class State:
         return False
 
 
-    def randomize(self, max_inv):  # TODO: Check if step is needed
+    def randomize(self, max_inv):
         """
         Replaces the State to a random position by a maximum value of max_inv.
 
@@ -81,7 +81,7 @@ class State:
         return State(x, y, z, self.__rot, self.__time)
     
     
-    def get_numpy_array(self):
+    def get_numpy_array(self): # TODO: Testen ob ein hinzufügen von mehreren Daten mehr bringt
         # return np.array([self.__x, self.__y, self.__z, self.__rot, self.__time])
         return np.array([self.__x, self.__y, self.__z])
     

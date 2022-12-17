@@ -19,7 +19,7 @@ maneuvers = [
 ]
 
 for maneuver in maneuvers:
-    maneuver.set_to_new_length(max([len(m) for m in maneuvers]))
+    maneuver.set_to_new_length(500) # max([len(m) for m in maneuvers])
     
 
 def generate_dataset(amount):
@@ -35,13 +35,13 @@ def generate_dataset(amount):
         tmp.extend(m.generate_maneuvers(amount))
         
     for m in tmp:
-        x_dataset.extend(m.get_numpy_array())
+        x_dataset.append(m.get_numpy_array())
         
     x_dataset = np.array(x_dataset, dtype=float)
     
     y_dataset = []
     for i in range(num_of_maneuvers):
-        y_dataset.extend([i for _ in range(amount * len(maneuvers[i]))])
+        y_dataset.extend([i for _ in range(amount)])
         
     y_dataset = np.array(y_dataset, dtype=int)
     
@@ -52,22 +52,9 @@ x_train, y_train = generate_dataset(train_amount)
 x_test, y_test = generate_dataset(test_amount)
 
 
+x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
+x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
 
-classes = np.unique(y_test, axis=0)
-
-plt.figure()
-for c in classes:
-    c_x_train = x_train[y_train == c]
-    plt.plot(c_x_train[0], label="class " + str(c))
-plt.legend(loc="best")
-plt.draw()
-plt.close()
-
-
-print("train shape: " + str(x_train.shape))
-
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 
 
 num_classes = len(np.unique(y_train))
@@ -82,19 +69,19 @@ y_train = y_train[idx]
 def make_model(input_shape):
     input_layer = keras.layers.Input(input_shape)
 
-    conv1 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(input_layer)
+    conv1 = keras.layers.Conv2D(filters=64, kernel_size=3, padding="same")(input_layer)
     conv1 = keras.layers.BatchNormalization()(conv1)
     conv1 = keras.layers.ReLU()(conv1)
 
-    conv2 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv1)
+    conv2 = keras.layers.Conv2D(filters=64, kernel_size=3, padding="same")(conv1)
     conv2 = keras.layers.BatchNormalization()(conv2)
     conv2 = keras.layers.ReLU()(conv2)
 
-    conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
+    conv3 = keras.layers.Conv2D(filters=64, kernel_size=3, padding="same")(conv2)
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.ReLU()(conv3)
 
-    gap = keras.layers.GlobalAveragePooling1D()(conv3)
+    gap = keras.layers.GlobalAveragePooling2D()(conv3)
 
     output_layer = keras.layers.Dense(num_classes, activation="softmax")(gap)
 
