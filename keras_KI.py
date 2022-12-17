@@ -8,15 +8,19 @@ import matplotlib.pyplot as plt
 
 """
 ! Wieder selbes Problem: Die Arrays müssen gleich lang sein
+
+! Durch das annähernde Angleichen der Menge an Werten in der Liste sind die Ergebnisse bei einem 
+! train_amount von 100 um 1% besser als zuvor (0.6499 bzw. 0.6600). Als nächstes werde ich versuchen die Listen in Unity
+! wirklich zu 100% gleich lang zu machen. 
 """
 
-train_amount = 400
+train_amount = 100
 test_amount = 50
 
 
 maneuvers = [
     parse_file("Looping_01"),
-    parse_file("JoJo_01")
+    parse_file("LangsamerJoJo_007")
 ]
 
 
