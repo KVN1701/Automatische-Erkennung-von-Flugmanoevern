@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 """
 
 train_amount = 100
-test_amount = 50
+test_amount = 40
 
 maneuvers = [
     parse_file("Looping_01"),
@@ -22,7 +22,8 @@ x_train = []
 tmp = []
 for m in maneuvers:
     tmp.extend(m.generate_maneuvers(train_amount))
-    
+
+print(len(tmp))
 for m in tmp:
         x_train.append(m.simplified_value())
         
@@ -30,6 +31,7 @@ x_train = np.array(x_train, dtype=float)
     
 y_train = [0 for _ in range(train_amount)]
 y_train.extend([1 for _ in range(train_amount)])
+print(len(y_train))
 y_train = np.array(y_train, dtype=int)
 
 # generate test values
@@ -53,8 +55,8 @@ classes = np.unique(y_test, axis=0)
 
 plt.figure()
 for c in classes:
-    c_x_test = x_test[y_train == c]
-    plt.plot(c_x_test[0], label="class " + str(c))
+    c_x_train = x_train[y_train == c]
+    plt.plot(c_x_train[0], label="class " + str(c))
 plt.legend(loc="best")
 plt.draw()
 plt.close()
