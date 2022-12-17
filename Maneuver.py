@@ -4,7 +4,7 @@ import numpy as np
 
 
 class State:
-    def __init__(self, x, y, z, rot=None, time=0):
+    def __init__(self, x: float, y: float, z: float, rot: float=None, time: float=0):
         """
         Creates an instance of State. States represent the individual points of
         a maneuver.
@@ -20,6 +20,10 @@ class State:
         self.__z = z
         self.__rot = rot
         self.__time = time
+        
+        
+    def __str__(self) -> str:
+        return f'({self.__x}, {self.__y}, {self.__z}) Time: {self.__time}, Rotation: {self.__rot}'
 
 
     def getX(self):
@@ -64,7 +68,7 @@ class State:
         return False
 
 
-    def randomize(self, max_inv):  # TODO: Check if step is needed
+    def randomize(self, max_inv):
         """
         Replaces the State to a random position by a maximum value of max_inv.
 
@@ -77,7 +81,7 @@ class State:
         return State(x, y, z, self.__rot, self.__time)
     
     
-    def get_numpy_array(self):
+    def get_numpy_array(self): # TODO: Testen ob ein hinzufügen von mehreren Daten mehr
         # return np.array([self.__x, self.__y, self.__z, self.__rot, self.__time])
         return np.array([self.__x, self.__y, self.__z])
     
@@ -108,6 +112,7 @@ class Maneuver:
             next_state.setTime(round(current_time, 4))
         self.__nodes = nodes
         self.__index = 0
+        self.__speed = initial_speed
 
 
     def __iter__(self):
@@ -195,9 +200,9 @@ class Maneuver:
 
 
     def stretch(self,
-                factor_x: float = randrange(180, 220) / 2,
-                factor_y: float = randrange(180, 220) / 2,
-                factor_z: float = randrange(180, 220) / 2): # zwischen 90% und 110% des ursprünglichen graphen
+                factor_x: float = randrange(-50, 50) / 2,
+                factor_y: float = randrange(-50, 50) / 2,
+                factor_z: float = randrange(-50, 50) / 2): # zwischen 75% und 125% des ursprünglichen graphen
         """
         Streches the Maneuver in x, y and z direction.
 
@@ -289,7 +294,7 @@ class Maneuver:
             rand_inv = round(uniform(0, 1.75), 2)
             mirror = choice([True, False]) if mirror else False
             move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
-            stretch_x, stretch_y, stretch_z = randrange(160, 240) / 2, randrange(160, 240) / 2, randrange(160, 240) / 2
+            stretch_x, stretch_y, stretch_z = randrange(-50, 50) / 2, randrange(-50, 50) / 2, randrange(-50, 50) / 2
             
             move_defined = move_x is not None and move_y is not None and move_z is not None
             stretch_defined = stretch_x is not None and stretch_y is not None and stretch_z is not None
@@ -299,15 +304,14 @@ class Maneuver:
             m = m.mirror(mirror)
             m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
             m = m.stretch(stretch_x, stretch_y, stretch_z) if stretch_defined else m.stretch(dist_stretch_x, dist_stretch_y, dist_stretch_z)
+            
             tmp.append(m)
         return tmp
 
 
     def getTotalDistance(self):
-        tmp = 0
-        for index in range(len(self.__nodes)):
-            tmp += math.fabs(self.__nodes[index] - self.__nodes[index + 1])
-        return tmp
+        last_element = self.__nodes[-1]
+        return round(last_element.getTime() * self.__speed, 1) # in Meters
 
 
     def get_numpy_array(self):
@@ -321,6 +325,12 @@ class Maneuver:
         return len(self.__nodes)
     
     
+    def set_to_new_length(self, total_length):
+        amount_new_elements = total_length - len(self)
+        for _ in range(amount_new_elements):
+            self.__nodes.append(State(0, 0, 0, time=-1))
+    
+    
     # ! temporär zur Vereinfachung des Problems
     def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
-        return [state.getX() for state in self.__nodes]
+        return np.array([state.getX() for state in self.__nodes])
