@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 ! Durch das annähernde Angleichen der Menge an Werten in der Liste sind die Ergebnisse bei einem 
 ! train_amount von 100 um 1% besser als zuvor (0.6499 bzw. 0.6600). Als nächstes werde ich versuchen die Listen in Unity
-! wirklich zu 100% gleich lang zu machen. 
+! wirklich zu 100% gleich lang zu machen. Normieren auf eine Länge von 300 Punkten hat die Zuverlässigkeit auf 80% gesteigert
 """
 
 train_amount = 100
@@ -19,13 +19,9 @@ test_amount = 50
 
 
 maneuvers = [
-    parse_file("Looping_01"),
-    parse_file("LangsamerJoJo_007")
+    parse_file("Looping"),
+    parse_file("LangsamerJoJo")
 ]
-
-
-for maneuver in maneuvers:
-    maneuver.set_to_new_length(300) # max([len(m) for m in maneuvers])
     
 
 def generate_dataset(amount):
