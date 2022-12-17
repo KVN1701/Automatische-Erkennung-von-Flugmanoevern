@@ -10,16 +10,18 @@ import matplotlib.pyplot as plt
 ! Wieder selbes Problem: Die Arrays müssen gleich lang sein
 """
 
-train_amount = 100
-test_amount = 40
+train_amount = 400
+test_amount = 50
+
 
 maneuvers = [
     parse_file("Looping_01"),
     parse_file("JoJo_01")
 ]
 
+
 for maneuver in maneuvers:
-    maneuver.set_to_new_length(500) # max([len(m) for m in maneuvers])
+    maneuver.set_to_new_length(300) # max([len(m) for m in maneuvers])
     
 
 def generate_dataset(amount):
@@ -51,7 +53,8 @@ def generate_dataset(amount):
 x_train, y_train = generate_dataset(train_amount)
 x_test, y_test = generate_dataset(test_amount)
 
-
+print(x_train)
+print(x_train.shape)
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
 

@@ -81,7 +81,7 @@ class State:
         return State(x, y, z, self.__rot, self.__time)
     
     
-    def get_numpy_array(self): # TODO: Testen ob ein hinzufügen von mehreren Daten mehr bringt
+    def get_numpy_array(self): # TODO: Testen ob ein hinzufügen von mehreren Daten mehr
         # return np.array([self.__x, self.__y, self.__z, self.__rot, self.__time])
         return np.array([self.__x, self.__y, self.__z])
     
@@ -328,7 +328,7 @@ class Maneuver:
     def set_to_new_length(self, total_length):
         amount_new_elements = total_length - len(self)
         for _ in range(amount_new_elements):
-            self.__nodes.append(State(0, 0, 0))
+            self.__nodes.append(State(0, 0, 0, time=-1))
     
     
     # ! temporär zur Vereinfachung des Problems
