@@ -304,6 +304,7 @@ class Maneuver:
             m = m.mirror(mirror)
             m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
             m = m.stretch(stretch_x, stretch_y, stretch_z) if stretch_defined else m.stretch(dist_stretch_x, dist_stretch_y, dist_stretch_z)
+            
             tmp.append(m)
         return tmp
 
@@ -326,4 +327,4 @@ class Maneuver:
     
     # ! temporär zur Vereinfachung des Problems
     def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
-        return [state.getX() for state in self.__nodes]
+        return np.array([state.getX() for state in self.__nodes])
