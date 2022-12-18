@@ -1,26 +1,21 @@
 import numpy as np
-import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Normalization
 from FileParser import parse_file
 import matplotlib.pyplot as plt
+from time import time
+from math import floor
 
 
-"""
-! Wieder selbes Problem: Die Arrays müssen gleich lang sein
+total_time = time()
 
-! Durch das annähernde Angleichen der Menge an Werten in der Liste sind die Ergebnisse bei einem 
-! train_amount von 100 um 1% besser als zuvor (0.6499 bzw. 0.6600). Als nächstes werde ich versuchen die Listen in Unity
-! wirklich zu 100% gleich lang zu machen. Normieren auf eine Länge von 300 Punkten hat die Zuverlässigkeit auf 80% gesteigert
-"""
-
-train_amount = 100
+train_amount = 100 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
 test_amount = 50
 
 
 maneuvers = [
     parse_file("Looping"),
-    parse_file("LangsamerJoJo")
+    parse_file("LangsamerJoJo"),
+    parse_file("SchnellerJoJo")
 ]
     
 
@@ -33,9 +28,11 @@ def generate_dataset(amount):
     num_of_maneuvers = len(maneuvers)
     x_dataset = []
     tmp = []
-    for m in maneuvers:
-        tmp.extend(m.generate_maneuvers(amount))
+    for i in range(len(maneuvers)): # generating the maneuvers to train the neural network
+        m = maneuvers[i]
+        tmp.extend(m.generate_maneuvers(amount, title=i+1))
         
+      
     for m in tmp:
         x_dataset.append(m.get_numpy_array())
         
@@ -50,14 +47,17 @@ def generate_dataset(amount):
     return x_dataset, y_dataset
     
     
-x_train, y_train = generate_dataset(train_amount)
-x_test, y_test = generate_dataset(test_amount)
 
-print(x_train)
-print(x_train.shape)
+print('\nGenerating the training Data:')
+x_train, y_train = generate_dataset(train_amount)
+
+print('\nGenerating the test data:')
+x_test, y_test = generate_dataset(test_amount)
+print()
+
+
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
-
 
 
 num_classes = len(np.unique(y_train))
@@ -90,6 +90,8 @@ def make_model(input_shape):
 
     return keras.models.Model(inputs=input_layer, outputs=output_layer)
 
+
+time_train = time()
 
 model = make_model(input_shape=x_train.shape[1:])
 keras.utils.plot_model(model, show_shapes=True)
@@ -133,6 +135,26 @@ test_loss, test_acc = model.evaluate(x_test, y_test)
 print("Test accuracy", test_acc)
 print("Test loss", test_loss)
 
+
+# time finished
+timestamp = time()
+
+# print the time the script took
+def format_time(time_in_seconds: float) -> str:
+    hours = floor(time_in_seconds/3600)
+    minutes = floor((time_in_seconds - hours * 3600)/60)
+    if minutes > 0:
+        if hours > 0:
+            return f'{hours} hours {minutes} minutes and {time_in_seconds - minutes * 60 - hours * 3600:.2f} seconds'
+        return f'{minutes} minutes and {time_in_seconds - minutes * 60:.2f} seconds'
+    return f'{time_in_seconds:.2f} seconds'
+
+
+# time to run the training
+print('Training the neural network took ' + format_time(timestamp - time_train))
+
+# time for the total script 
+print('The total script took ' + format_time(timestamp - total_time))
 """
 ## Plot the model's training and validation loss
 """

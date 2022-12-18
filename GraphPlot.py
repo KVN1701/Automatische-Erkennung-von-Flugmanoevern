@@ -15,7 +15,7 @@ def plot(maneuver):
             [i.getZ() for i in maneuver.getNodes()])
 
 
-maneuver = parse_file("Looping_01")
+maneuver = parse_file("Looping")
 #maneuver.getNodes().append(State(0, 0, 0))
 xs, ys, zs = plot(maneuver)
 
