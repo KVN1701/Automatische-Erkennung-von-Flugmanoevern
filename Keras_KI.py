@@ -1,14 +1,16 @@
 import numpy as np
 from tensorflow import keras
-from FileParser import parse_file
+from HelpfulMethods import parse_file, format_time
 import matplotlib.pyplot as plt
 from time import time
-from math import floor
 
 
 total_time = time()
 
+# The amount of maneuvers that will be generated for every maneuver in maneuvers
 train_amount = 100 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
+
+# The amount of test maneuvers that will be generated
 test_amount = 50
 
 
@@ -21,33 +23,35 @@ maneuvers = [
 
 def generate_dataset(amount):
     """
-    generates a dataset to train the Neural Network
+    Generates a dataset to train the Neural Network.
     
     :param amount: the amount of training data
+    :return: the dataset in a tuple containing the data and labels
     """
     num_of_maneuvers = len(maneuvers)
+    
+    # generating the maneuvers to train/ test the neural network
     x_dataset = []
     tmp = []
-    for i in range(len(maneuvers)): # generating the maneuvers to train the neural network
+    for i in range(len(maneuvers)): 
         m = maneuvers[i]
         tmp.extend(m.generate_maneuvers(amount, title=i+1))
         
-      
+    # converting the maneuvers to numpy arrays
     for m in tmp:
-        x_dataset.append(m.get_numpy_array())
-        
+        x_dataset.append(m.get_numpy_array())   
     x_dataset = np.array(x_dataset, dtype=float)
     
+    # generating the labels for the dataset
     y_dataset = []
     for i in range(num_of_maneuvers):
         y_dataset.extend([i for _ in range(amount)])
-        
     y_dataset = np.array(y_dataset, dtype=int)
     
     return x_dataset, y_dataset
     
     
-
+# Generating the datasets to train/ test the neural network
 print('\nGenerating the training Data:')
 x_train, y_train = generate_dataset(train_amount)
 
@@ -139,15 +143,6 @@ print("Test loss", test_loss)
 # time finished
 timestamp = time()
 
-# print the time the script took
-def format_time(time_in_seconds: float) -> str:
-    hours = floor(time_in_seconds/3600)
-    minutes = floor((time_in_seconds - hours * 3600)/60)
-    if minutes > 0:
-        if hours > 0:
-            return f'{hours} hours {minutes} minutes and {time_in_seconds - minutes * 60 - hours * 3600:.2f} seconds'
-        return f'{minutes} minutes and {time_in_seconds - minutes * 60:.2f} seconds'
-    return f'{time_in_seconds:.2f} seconds'
 
 
 # time to run the training

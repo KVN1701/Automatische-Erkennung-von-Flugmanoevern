@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from Maneuver import Maneuver, State
-from FileParser import parse_file
+from HelpfulMethods import parse_file
 
 
 def plot(maneuver):
