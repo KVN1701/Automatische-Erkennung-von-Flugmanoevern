@@ -5,10 +5,16 @@ import matplotlib.pyplot as plt
 from time import time
 
 
+"""
+Bei training amount von 1000 braucht die KI 36 minutes and 26.42 seconds und hat eine genauigkeit von 70%
+ohne reshaping nur 7 minutes and 2.22 seconds und 72%
+"""
+
+
 total_time = time()
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 100 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
+train_amount = 1500 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
@@ -60,9 +66,10 @@ x_test, y_test = generate_dataset(test_amount)
 print()
 
 
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
+# x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
+# x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
 
+print(x_train.shape)
 
 num_classes = len(np.unique(y_train))
 
@@ -76,19 +83,19 @@ y_train = y_train[idx]
 def make_model(input_shape):
     input_layer = keras.layers.Input(input_shape)
 
-    conv1 = keras.layers.Conv2D(filters=64, kernel_size=3, padding="same")(input_layer)
+    conv1 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(input_layer)
     conv1 = keras.layers.BatchNormalization()(conv1)
     conv1 = keras.layers.ReLU()(conv1)
 
-    conv2 = keras.layers.Conv2D(filters=64, kernel_size=3, padding="same")(conv1)
+    conv2 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv1)
     conv2 = keras.layers.BatchNormalization()(conv2)
     conv2 = keras.layers.ReLU()(conv2)
 
-    conv3 = keras.layers.Conv2D(filters=64, kernel_size=3, padding="same")(conv2)
+    conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.ReLU()(conv3)
 
-    gap = keras.layers.GlobalAveragePooling2D()(conv3)
+    gap = keras.layers.GlobalAveragePooling1D()(conv3)
 
     output_layer = keras.layers.Dense(num_classes, activation="softmax")(gap)
 
