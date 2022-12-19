@@ -6,20 +6,24 @@ from time import time
 
 
 """
-Bei training amount von 1000 braucht die KI 36 minutes and 26.42 seconds und hat eine genauigkeit von 70%
-ohne reshaping nur 7 minutes and 2.22 seconds und 72%
+! Bei training amount von 1000 braucht die KI 36 minutes and 26.42 seconds und hat eine genauigkeit von 70%
+! ohne reshaping nur 7 minutes and 2.22 seconds und 72%
+! 
+! 49 minutes and 2.52 seconds Test accuracy 98% 1500
+! 44 minutes and 20.04 seconds 72% mit neuen Layern 500
 """
 
 
 total_time = time()
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 1500 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
+train_amount = 500 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
 
 
+# one maneuver consists of 300 states
 maneuvers = [
     parse_file("Looping"),
     parse_file("LangsamerJoJo"),
@@ -83,15 +87,15 @@ y_train = y_train[idx]
 def make_model(input_shape):
     input_layer = keras.layers.Input(input_shape)
 
-    conv1 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(input_layer)
+    conv1 = keras.layers.Conv1D(filters=x_train.shape[1], kernel_size=3, padding="same")(input_layer) # filter = Länge der Liste
     conv1 = keras.layers.BatchNormalization()(conv1)
     conv1 = keras.layers.ReLU()(conv1)
 
-    conv2 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv1)
+    conv2 = keras.layers.Conv1D(filters=x_train.shape[1], kernel_size=3, padding="same")(conv1)
     conv2 = keras.layers.BatchNormalization()(conv2)
     conv2 = keras.layers.ReLU()(conv2)
 
-    conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
+    conv3 = keras.layers.Conv1D(filters=x_train.shape[1], kernel_size=3, padding="same")(conv2)
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.ReLU()(conv3)
 
@@ -108,7 +112,7 @@ model = make_model(input_shape=x_train.shape[1:])
 keras.utils.plot_model(model, show_shapes=True)
 
 
-epochs = 500
+epochs = 750 # 500 nicht genug ohne reshape und 1500 train_amount
 batch_size = 32
 
 callbacks = [
