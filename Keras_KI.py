@@ -9,15 +9,21 @@ from time import time
 ! Bei training amount von 1000 braucht die KI 36 minutes and 26.42 seconds und hat eine genauigkeit von 70%
 ! ohne reshaping nur 7 minutes and 2.22 seconds und 72%
 ! 
-! 49 minutes and 2.52 seconds Test accuracy 98% 1500
-! 44 minutes and 20.04 seconds 72% mit neuen Layern 500
+! 49 minutes and 2.52 seconds Test accuracy 98% amount 1500
+! 44 minutes and 20.04 seconds 72% Layer 300 300 300 amount 500
+! 11 minutes and 58.03 seconds 66.4% Layer 300 100 50 amount 500
+! 9 minutes and 36.72 seconds 65% Layer 300 150 75 amount 500 23 minutes and 49.33 seconds 67,3% amount 1000
+! 35 minutes and 36.25 seconds 65% Layer 500 250 100 amount 500
+
+! 19 minutes and 28.86 seconds 76,7% Layer 128 96 64 amount 1000
+! took 16 minutes and 57.06 seconds 73,3% Layer 128 96 64 amount 1500 98% 2 Stunden
 """
 
 
 total_time = time()
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 500 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung 3000 --> 100%
+train_amount = 5000 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung, 3000 --> 100%
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
@@ -87,15 +93,15 @@ y_train = y_train[idx]
 def make_model(input_shape):
     input_layer = keras.layers.Input(input_shape)
 
-    conv1 = keras.layers.Conv1D(filters=x_train.shape[1], kernel_size=3, padding="same")(input_layer) # filter = Länge der Liste
+    conv1 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(input_layer) # filter = Länge der Liste
     conv1 = keras.layers.BatchNormalization()(conv1)
     conv1 = keras.layers.ReLU()(conv1)
 
-    conv2 = keras.layers.Conv1D(filters=x_train.shape[1], kernel_size=3, padding="same")(conv1)
+    conv2 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv1)
     conv2 = keras.layers.BatchNormalization()(conv2)
     conv2 = keras.layers.ReLU()(conv2)
 
-    conv3 = keras.layers.Conv1D(filters=x_train.shape[1], kernel_size=3, padding="same")(conv2)
+    conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.ReLU()(conv3)
 
@@ -112,7 +118,7 @@ model = make_model(input_shape=x_train.shape[1:])
 keras.utils.plot_model(model, show_shapes=True)
 
 
-epochs = 750 # 500 nicht genug ohne reshape und 1500 train_amount
+epochs = 500 # 500 nicht genug ohne reshape und 1500 train_amount
 batch_size = 32
 
 callbacks = [
