@@ -61,17 +61,17 @@ def build_model(hp):
     model.add(Dense(num_classes, activation="softmax"))
     
     model.compile(optimizer="adam",
-                  loss="categorical_crossentropy",
-                  metrics=["accuracy"])
+                  loss="sparse_categorical_crossentropy",
+                  metrics=["sparse_categorical_accuracy"])
     
     return model
 
 
 tuner = RandomSearch(
     build_model,
-    objective="val_accuracy",
-    max_trials=100,
-    executions_per_trial=3,
+    objective="sparse_categorical_accuracy",
+    max_trials=3,
+    executions_per_trial=2,
     directory=f"tuner_log\\{LOG_NAME}"
 )
 
