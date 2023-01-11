@@ -44,22 +44,35 @@ def format_time(time_in_seconds: float) -> str:
     return f'{seconds:.2f} seconds'
 
 
+# The list of Maneuvers the project currently holds
+maneuvers = [
+    parse_file("Looping"),
+    parse_file("LangsamerJoJo"),
+    parse_file("SchnellerJoJo")
+]
 
-def generate_dataset(amount, maneuver_list):
+# dictionary which links an index to a Maneuver
+maneuver_dict = {
+    0 : 'Looping',
+    1 : 'Langsamer JoJo',
+    2 : 'Schneller JoJo'
+}
+
+
+def generate_dataset(amount):
     """
     Generates a dataset to train the Neural Network.
     
     :param amount: the amount of training data
-    :param maneuver_list: a list of maneuvers to generate the data from
     :return: the dataset in a tuple containing the data and labels
-    """
-    num_of_maneuvers = len(maneuver_list)
+    """    
+    num_of_maneuvers = len(maneuvers)
     
     # generating the maneuvers to train/ test the neural network
     x_dataset = []
     tmp = []
-    for i in range(len(maneuver_list)): 
-        m = maneuver_list[i]
+    for i in range(len(maneuvers)): 
+        m = maneuvers[i]
         tmp.extend(m.generate_maneuvers(amount, title=i+1))
         
     # converting the maneuvers to numpy arrays

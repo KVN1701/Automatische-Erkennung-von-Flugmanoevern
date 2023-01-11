@@ -128,6 +128,10 @@ class Maneuver:
             return result
         else:
             raise StopIteration
+        
+        
+    def __getitem__(self, key):
+        return self.__nodes[key]        
 
 
     def getNodes(self):
