@@ -1,5 +1,6 @@
 from Maneuver import Maneuver, State
 from math import floor
+import numpy as np
 
 """
 Holds some methods that could be useful in multiple files
@@ -41,3 +42,35 @@ def format_time(time_in_seconds: float) -> str:
             return f'{hours} hours {minutes} minutes and {seconds:.2f} seconds'
         return f'{minutes} minutes and {seconds:.2f} seconds'
     return f'{seconds:.2f} seconds'
+
+
+
+def generate_dataset(amount, maneuver_list):
+    """
+    Generates a dataset to train the Neural Network.
+    
+    :param amount: the amount of training data
+    :param maneuver_list: a list of maneuvers to generate the data from
+    :return: the dataset in a tuple containing the data and labels
+    """
+    num_of_maneuvers = len(maneuver_list)
+    
+    # generating the maneuvers to train/ test the neural network
+    x_dataset = []
+    tmp = []
+    for i in range(len(maneuver_list)): 
+        m = maneuver_list[i]
+        tmp.extend(m.generate_maneuvers(amount, title=i+1))
+        
+    # converting the maneuvers to numpy arrays
+    for m in tmp:
+        x_dataset.append(m.get_numpy_array())   
+    x_dataset = np.array(x_dataset, dtype=float)
+    
+    # generating the labels for the dataset
+    y_dataset = []
+    for i in range(num_of_maneuvers):
+        y_dataset.extend([i for _ in range(amount)])
+    y_dataset = np.array(y_dataset, dtype=int)
+    
+    return x_dataset, y_dataset

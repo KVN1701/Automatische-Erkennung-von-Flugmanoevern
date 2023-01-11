@@ -1,15 +1,19 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow import keras
-from HelpfulMethods import parse_file, format_time
+from HelpfulMethods import parse_file, format_time, generate_dataset
 import matplotlib.pyplot as plt
 from time import time
 
+sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 
 """
 ! Bei training amount von 1000 braucht die KI 36 minutes and 26.42 seconds und hat eine genauigkeit von 70%
 ! ohne reshaping nur 7 minutes and 2.22 seconds und 72%
+! zusätzlicher Layer: 68% 12 minutes and 40.3 seconds
 ! 
 ! 49 minutes and 2.52 seconds Test accuracy 98% amount 1500
+! 14 minutes and 15.12 seconds Test accuracy 74% amount 1500 4 Layer
 ! 44 minutes and 20.04 seconds 72% Layer 300 300 300 amount 500
 ! 11 minutes and 58.03 seconds 66.4% Layer 300 100 50 amount 500
 ! 9 minutes and 36.72 seconds 65% Layer 300 150 75 amount 500 23 minutes and 49.33 seconds 67,3% amount 1000
@@ -23,7 +27,7 @@ from time import time
 total_time = time()
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 5000 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung, 3000 --> 100%
+train_amount = 100 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung, 3000 --> 100%
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
@@ -36,50 +40,19 @@ maneuvers = [
     parse_file("SchnellerJoJo")
 ]
     
-
-def generate_dataset(amount):
-    """
-    Generates a dataset to train the Neural Network.
-    
-    :param amount: the amount of training data
-    :return: the dataset in a tuple containing the data and labels
-    """
-    num_of_maneuvers = len(maneuvers)
-    
-    # generating the maneuvers to train/ test the neural network
-    x_dataset = []
-    tmp = []
-    for i in range(len(maneuvers)): 
-        m = maneuvers[i]
-        tmp.extend(m.generate_maneuvers(amount, title=i+1))
-        
-    # converting the maneuvers to numpy arrays
-    for m in tmp:
-        x_dataset.append(m.get_numpy_array())   
-    x_dataset = np.array(x_dataset, dtype=float)
-    
-    # generating the labels for the dataset
-    y_dataset = []
-    for i in range(num_of_maneuvers):
-        y_dataset.extend([i for _ in range(amount)])
-    y_dataset = np.array(y_dataset, dtype=int)
-    
-    return x_dataset, y_dataset
-    
     
 # Generating the datasets to train/ test the neural network
 print('\nGenerating the training Data:')
-x_train, y_train = generate_dataset(train_amount)
+x_train, y_train = generate_dataset(train_amount, maneuvers)
 
 print('\nGenerating the test data:')
-x_test, y_test = generate_dataset(test_amount)
+x_test, y_test = generate_dataset(test_amount, maneuvers)
 print()
 
 
 # x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
 # x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
 
-print(x_train.shape)
 
 num_classes = len(np.unique(y_train))
 
@@ -104,8 +77,12 @@ def make_model(input_shape):
     conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.ReLU()(conv3)
+    
+    conv4 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv3)
+    conv4 = keras.layers.BatchNormalization()(conv4)
+    conv4 = keras.layers.ReLU()(conv4)
 
-    gap = keras.layers.GlobalAveragePooling1D()(conv3)
+    gap = keras.layers.GlobalAveragePooling1D()(conv4)
 
     output_layer = keras.layers.Dense(num_classes, activation="softmax")(gap)
 
@@ -130,11 +107,13 @@ callbacks = [
     ),
     keras.callbacks.EarlyStopping(monitor="val_loss", patience=50, verbose=1),
 ]
+
 model.compile(
     optimizer="adam",
     loss="sparse_categorical_crossentropy",
     metrics=["sparse_categorical_accuracy"],
 )
+
 history = model.fit(
     x_train,
     y_train,
@@ -159,7 +138,6 @@ print("Test loss", test_loss)
 
 # time finished
 timestamp = time()
-
 
 
 # time to run the training
