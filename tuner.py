@@ -3,7 +3,7 @@ from tensorflow import keras
 from keras.layers import Dense, Conv2D, Input, GlobalAveragePooling2D, ReLU, BatchNormalization, Flatten
 from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters
-from HelpfulMethods import parse_file, generate_dataset, format_time
+from helpful_methods import generate_dataset, format_time
 import numpy as np
 import time
 
@@ -12,7 +12,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 print(tf.config.list_physical_devices('GPU'))
 
 
-# ! erster Test: train amount von 1000
+# ! 4 Manöver 05h 54m 38s
 
 
 LOG_NAME = f"{int(time.time())}"
@@ -22,16 +22,9 @@ start_time = time.time()
 tuner_train_amount = 100
 tuner_test_amount = 50
 
-# one maneuver consists of 300 states
-maneuvers = [
-    parse_file("Looping"),
-    parse_file("LangsamerJoJo"),
-    parse_file("SchnellerJoJo")
-]
 
-
-x_train, y_train = generate_dataset(tuner_train_amount, maneuvers)
-x_test, y_test = generate_dataset(tuner_test_amount, maneuvers)
+x_train, y_train = generate_dataset(tuner_train_amount)
+x_test, y_test = generate_dataset(tuner_test_amount)
 
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], x_train.shape[2], 1))
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
@@ -70,9 +63,9 @@ def build_model(hp):
 tuner = RandomSearch(
     build_model,
     objective="sparse_categorical_accuracy",
-    max_trials=3,
+    max_trials=100,
     executions_per_trial=2,
-    directory=f"tuner_log\\{LOG_NAME}"
+    directory=f"tuner_log/{LOG_NAME}"
 )
 
 
@@ -84,14 +77,18 @@ early_stop = [
 
 tuner.search(x=x_train,
              y=y_train,
-             epochs=500,
+             epochs=200,
              batch_size=32,
              validation_data=(x_test, y_test),
              callbacks=early_stop)
         
+
 best_model = tuner.get_best_models()[0]
 print(best_model.summary())
 
-best_model.save(f"tuner_models\\{LOG_NAME}.h5")
+
+best_model.save(f"tuner_models/{LOG_NAME}.h5")
+keras.utils.plot_model(best_model, show_shapes=True, to_file=f'tuner_models/{LOG_NAME}.png')
+
 
 print(f"\nThe Script took {format_time(time.time() - start_time)}")

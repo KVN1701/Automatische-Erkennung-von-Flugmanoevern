@@ -327,8 +327,3 @@ class Maneuver:
         amount_new_elements = total_length - len(self)
         for _ in range(amount_new_elements):
             self.__nodes.append(State(0, 0, 0, time=-1))
-    
-    
-    # ! temporär zur Vereinfachung des Problems
-    def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
-        return np.array([state.getX() for state in self.__nodes])
