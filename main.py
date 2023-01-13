@@ -2,7 +2,7 @@ from tensorflow import keras
 from helpful_methods import parse_file, generate_dataset, maneuver_dict
 import numpy as np
 from graph_plot import draw_maneuvers
-from maneuver_ import Maneuver
+from maneuver import Maneuver
 
 
 model = keras.models.load_model('best_model.h5')

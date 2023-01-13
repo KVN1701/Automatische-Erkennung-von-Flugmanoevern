@@ -1,4 +1,4 @@
-from maneuver_ import Maneuver, State
+from maneuver import Maneuver, State
 from math import floor
 import numpy as np
 
