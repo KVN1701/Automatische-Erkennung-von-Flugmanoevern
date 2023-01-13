@@ -1,6 +1,7 @@
 import math
 from random import randrange, choice, uniform
 import numpy as np
+from alive_progress import alive_bar
 
 
 class State:
@@ -127,6 +128,10 @@ class Maneuver:
             return result
         else:
             raise StopIteration
+        
+        
+    def __getitem__(self, key):
+        return self.__nodes[key]        
 
 
     def getNodes(self):
@@ -186,17 +191,6 @@ class Maneuver:
             tmp_y = (-math.sin(rad_angle) * (n_x - c_x) + math.cos(rad_angle) * (n_y - c_y)) + c_y
             tmp.append(State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime()))  # TODO: Rotation muss noch geupdated werden
         return Maneuver(tmp)
-
-
-    # ! not needed for the calculation of random maneuvers, because stretch does basically the same
-    def scale(self, factor: float = randrange(180, 220) / 2):  # zufälliger Faktor zwischen -10% und 10% in 0,5er Schritten
-        """
-        Sretches or shrinks a Maneuver by a given factor.
-
-        :param factor: The resizing factor in percent
-        :return: the resized Maneuver
-        """
-        return self.stretch(factor, factor, factor)
 
 
     def stretch(self,
@@ -263,15 +257,16 @@ class Maneuver:
 
     def generate_maneuvers(self, 
                            amount: int, 
-                           max_inv=None,  
-                           angle=None, 
-                           mirror=True, 
-                           dist_move_x=None, 
-                           dist_move_y=None, 
-                           dist_move_z=None,
-                           dist_stretch_x=None,
-                           dist_stretch_y=None,
-                           dist_stretch_z=None,
+                           max_inv: float=None,
+                           angle: float=None,
+                           mirror: bool=True,
+                           dist_move_x: float=None, 
+                           dist_move_y: float=None, 
+                           dist_move_z: float=None,
+                           dist_stretch_x: float=None,
+                           dist_stretch_y: float=None,
+                           dist_stretch_z: float=None,
+                           title: str=''
                 ) -> list:
         """
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
@@ -286,26 +281,29 @@ class Maneuver:
         :param dist_stretch_x: the amount of stretch applied (in x direction)
         :param dist_stretch_y: the amount of stretch applied (in y direction)
         :param dist_stretch_z: the amount of stretch applied (in z direction)
+        :param title: the maneuvers title
         :return: a list of Maneuvers
         """
         tmp = []
-        for _ in range(amount):
-            rand_angle = randrange(0, 360 * 4) / 4
-            rand_inv = round(uniform(0, 1.75), 2)
-            mirror = choice([True, False]) if mirror else False
-            move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
-            stretch_x, stretch_y, stretch_z = randrange(-50, 50) / 2, randrange(-50, 50) / 2, randrange(-50, 50) / 2
-            
-            move_defined = move_x is not None and move_y is not None and move_z is not None
-            stretch_defined = stretch_x is not None and stretch_y is not None and stretch_z is not None
+        with alive_bar(amount, bar='classic', title=f'Maneuver {title}', ctrl_c=False) as bar:
+            for _ in range(amount):
+                rand_angle = randrange(0, 360 * 4) / 4
+                rand_inv = round(uniform(0, 1.75), 2)
+                mirror = choice([True, False]) if mirror else False
+                move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
+                stretch_x, stretch_y, stretch_z = randrange(-50, 50) / 2, randrange(-50, 50) / 2, randrange(-50, 50) / 2
+                
+                move_defined = move_x is not None and move_y is not None and move_z is not None
+                stretch_defined = stretch_x is not None and stretch_y is not None and stretch_z is not None
 
-            m = self.turn(angle) if angle is not None else self.turn(rand_angle)
-            m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
-            m = m.mirror(mirror)
-            m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
-            m = m.stretch(stretch_x, stretch_y, stretch_z) if stretch_defined else m.stretch(dist_stretch_x, dist_stretch_y, dist_stretch_z)
-            
-            tmp.append(m)
+                m = self.turn(angle) if angle is not None else self.turn(rand_angle)
+                m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
+                m = m.mirror(mirror)
+                m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
+                m = m.stretch(stretch_x, stretch_y, stretch_z) if stretch_defined else m.stretch(dist_stretch_x, dist_stretch_y, dist_stretch_z)
+                
+                tmp.append(m)
+                bar()
         return tmp
 
 
@@ -329,8 +327,3 @@ class Maneuver:
         amount_new_elements = total_length - len(self)
         for _ in range(amount_new_elements):
             self.__nodes.append(State(0, 0, 0, time=-1))
-    
-    
-    # ! temporär zur Vereinfachung des Problems
-    def simplified_value(self): # gibt nur einen der Koordinatenwerte wieder heraus für die KI
-        return np.array([state.getX() for state in self.__nodes])
