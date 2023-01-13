@@ -2,7 +2,7 @@ from tensorflow import keras
 from helpful_methods import parse_file, generate_dataset, maneuver_dict
 import numpy as np
 from graph_plot import draw_maneuvers
-from maneuver import Maneuver
+from maneuver_ import Maneuver
 
 
 model = keras.models.load_model('best_model.h5')
@@ -26,9 +26,10 @@ def predict_single(maneuver, draw_plot=True):
     x_test = np.array([maneuver.get_numpy_array()])
     prediction = model.predict(x_test)
     probabilities = [round(float(val) * 100, 4) for pred in prediction for val in pred]
-    print('\nWahrscheinlichkeiten für Manöver:')
+    print(f'\nErkennung von Manöver {maneuver.get_name()}')
     for i in range(len(probabilities)):
-        print(f'{maneuver_dict[i]:17}: {probabilities[i]}%')
+        print(f'{maneuver_dict[i]:14}: {probabilities[i]}%')
+    print()
     
     
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from maneuver import Maneuver, State
+from maneuver_ import Maneuver, State
 from helpful_methods import parse_file
 
 
