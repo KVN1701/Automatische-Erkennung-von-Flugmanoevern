@@ -67,6 +67,10 @@ class State:
                    self.__z == other.__z and \
                    self.__time == other.__time
         return False
+    
+    
+    def __str__(self) -> str:
+        return f'({self.__x:.2f}, {self.__y:.2f}, {self.__x:.2f})'
 
 
     def randomize(self, max_inv):
@@ -132,7 +136,18 @@ class Maneuver:
         
         
     def __getitem__(self, key):
-        return self.__nodes[key]        
+        return self.__nodes[key]    
+    
+    
+    def __str__(self) -> str:
+        rslt = "["
+        for state in self.__nodes:
+            if state is np.nan:
+                rslt += "NaN"
+                continue
+            rslt += str(state) + ",\n"
+        rslt = rslt[:-2] + "]"
+        return rslt  
 
 
     def get_nodes(self):
@@ -183,9 +198,6 @@ class Maneuver:
         """
         # z-Achse ist die vertikale, y und x müssen für eine Rotation angepasst werden
         rad_angle = (math.pi / 180) * angle  # umrechnen in Radiant
-
-        headx, heady, headz = self.__nodes[0].getCoordinates()
-        tailx, taily, tailz = self.__nodes[-1].getCoordinates()
         c_x, c_y, _ = self.__get_center() # Punkt um den rotiert werden soll (Mittelpunkt)
 
         tmp = []
@@ -327,7 +339,10 @@ class Maneuver:
         return len(self.__nodes)
     
     
-    def set_to_new_length(self, total_length):
-        amount_new_elements = total_length - len(self)
-        for _ in range(amount_new_elements):
-            self.__nodes.append(State(0, 0, 0, time=-1))
+    def get_numpy_array_part(self, percent):
+        factor = percent/100
+        new_length = round(factor * len(self.__nodes))
+        tmp = self.__nodes.copy()
+        for i in range(new_length, len(tmp)):
+            tmp[i] = np.nan
+        return np.array(tmp)

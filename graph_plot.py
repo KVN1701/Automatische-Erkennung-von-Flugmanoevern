@@ -16,9 +16,9 @@ def plot(maneuver):
 
     :return: a set of three arrays holding the coordinates for the matlibplotter
     """
-    return ([i.getX() for i in maneuver.getNodes()],
-            [i.getY() for i in maneuver.getNodes()],
-            [i.getZ() for i in maneuver.getNodes()])
+    return ([i.getX() for i in maneuver],
+            [i.getY() for i in maneuver],
+            [i.getZ() for i in maneuver])
 
 
 def __draw_help(maneuver):
