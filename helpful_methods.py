@@ -23,7 +23,7 @@ def parse_file(file_name: str):
         line = line.replace("(", "").replace(")", "")
         tmp = [float(val) for val in line.split(", ")]
         coordinates.append(State(tmp[0], tmp[2],tmp[1])) # has to be switched, because unity has a different coord system
-    return Maneuver(coordinates)
+    return Maneuver(coordinates, name=file_name)
 
 
 
@@ -73,9 +73,8 @@ def generate_dataset(amount):
     # generating the maneuvers to train/ test the neural network
     x_dataset = []
     tmp = []
-    for i in range(len(maneuvers)): 
-        m = maneuvers[i]
-        tmp.extend(m.generate_maneuvers(amount, title=i+1))
+    for m in maneuvers: 
+        tmp.extend(m.generate_maneuvers(amount))
         
     # converting the maneuvers to numpy arrays
     for m in tmp:

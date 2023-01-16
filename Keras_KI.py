@@ -18,10 +18,10 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 total_time = time()
 
 # The model that will be used
-model = keras.models.load_model("tuner_models/1673558607.h5")
+model = keras.models.load_model("best_model.h5")
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 2000 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung, 3000 --> 100%
+train_amount = 3000 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung, 3000 --> 100%
 
 # The amount of test maneuvers that will be generated
 test_amount = 50

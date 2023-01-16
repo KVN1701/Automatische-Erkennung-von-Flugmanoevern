@@ -67,6 +67,10 @@ class State:
                    self.__z == other.__z and \
                    self.__time == other.__time
         return False
+    
+    
+    def __str__(self) -> str:
+        return f'({self.__x:.2f}, {self.__y:.2f}, {self.__x:.2f})'
 
 
     def randomize(self, max_inv):
@@ -94,7 +98,7 @@ class State:
 
 
 class Maneuver:
-    def __init__(self, nodes: list, initial_speed=167): # ca. 600km/h
+    def __init__(self, nodes: list, initial_speed=167, name='Maneuver'): # ca. 600km/h
         """
         Creates an instance of a Maneuver. The position of the plane is defined
         by a list of Vectors containing the plane's position (maybe also other information).
@@ -114,6 +118,7 @@ class Maneuver:
         self.__nodes = nodes
         self.__index = 0
         self.__speed = initial_speed
+        self.__name = name
 
 
     def __iter__(self):
@@ -131,18 +136,33 @@ class Maneuver:
         
         
     def __getitem__(self, key):
-        return self.__nodes[key]        
+        return self.__nodes[key]    
+    
+    
+    def __str__(self) -> str:
+        rslt = "["
+        for state in self.__nodes:
+            if state is np.nan:
+                rslt += "NaN"
+                continue
+            rslt += str(state) + ",\n"
+        rslt = rslt[:-2] + "]"
+        return rslt  
 
 
-    def getNodes(self):
+    def get_nodes(self):
         return self.__nodes
 
 
     def getTotalTime(self):
         return self.__nodes[-1].getTime()
+    
+    
+    def get_name(self):
+        return self.__name
 
 
-    def __getCenter(self):
+    def __get_center(self):
         """
         :return: A state which is in the middle of the Maneuver
         """
@@ -166,7 +186,7 @@ class Maneuver:
         :return: Maneuver
         """
         tmp = [n.randomize(max_inv) for n in self.__nodes]
-        return Maneuver(tmp)
+        return Maneuver(tmp, name=self.__name)
 
 
     def turn(self, angle: float = randrange(0, 360 * 4) / 4):  # Zufällige Gradzahl in 0.5er Schritten
@@ -178,10 +198,7 @@ class Maneuver:
         """
         # z-Achse ist die vertikale, y und x müssen für eine Rotation angepasst werden
         rad_angle = (math.pi / 180) * angle  # umrechnen in Radiant
-
-        headx, heady, headz = self.__nodes[0].getCoordinates()
-        tailx, taily, tailz = self.__nodes[-1].getCoordinates()
-        c_x, c_y, _ = ((headx + tailx) / 2, (heady + taily) / 2, (headz + tailz) / 2)  # Punkt um den rotiert werden soll (Mittelpunkt)
+        c_x, c_y, _ = self.__get_center() # Punkt um den rotiert werden soll (Mittelpunkt)
 
         tmp = []
         for n in self.__nodes:
@@ -190,7 +207,7 @@ class Maneuver:
             tmp_x = (math.cos(rad_angle) * (n_x - c_x) + math.sin(rad_angle) * (n_y - c_y)) + c_x
             tmp_y = (-math.sin(rad_angle) * (n_x - c_x) + math.cos(rad_angle) * (n_y - c_y)) + c_y
             tmp.append(State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime()))  # TODO: Rotation muss noch geupdated werden
-        return Maneuver(tmp)
+        return Maneuver(tmp, name=self.__name)
 
 
     def stretch(self,
@@ -205,7 +222,7 @@ class Maneuver:
         :param factor_z: the factor by which the Maneuver will be streched in z-direction in percent
         :return: an instance of Maneuver
         """
-        center_x, center_y, center_z = self.__getCenter()
+        center_x, center_y, center_z = self.__get_center()
         tmp = []
         for n in self.__nodes:
             x = n.getX() - center_x # distance to the center (x-coordinate)
@@ -213,7 +230,7 @@ class Maneuver:
             z = n.getZ() - center_z # distance to the center (z-coordinate)
             x, y, z = n.getX() + (factor_x / 100) * x, n.getY() + (factor_y / 100) * y, n.getZ() + (factor_z / 100) * z
             tmp.append(State(x, y, z, n.getTime(), n.getRotation()))
-        return Maneuver(tmp)
+        return Maneuver(tmp, name=self.__name)
 
 
     def move(self, 
@@ -234,7 +251,7 @@ class Maneuver:
             n.getZ() + distance_z,
             n.getTime(),
             n.getRotation()
-        ) for n in self.__nodes])
+        ) for n in self.__nodes], name=self.__name)
 
 
     def mirror(self, mirror: bool = True):
@@ -245,13 +262,13 @@ class Maneuver:
         :return: an instance of Maneuver
         """
         if mirror:
-            _, c_y, _ = self.__getCenter() # centerx, centery, centerz
+            _, c_y, _ = self.__get_center() # centerx, centery, centerz
             tmp = []
             for n in self.__nodes:
                 # z-Achse oben -> bleibt gleich
                 y = (n.getY() - c_y) * -2
                 tmp.append(State(n.getX(), n.getY() + y, n.getZ(), n.getTime(), n.getRotation()))
-            return Maneuver(tmp)
+            return Maneuver(tmp, name=self.__name)
         return self
 
 
@@ -266,7 +283,6 @@ class Maneuver:
                            dist_stretch_x: float=None,
                            dist_stretch_y: float=None,
                            dist_stretch_z: float=None,
-                           title: str=''
                 ) -> list:
         """
         Used to create random Maneuvers based of the current Maneuver by using the implementeded methods.
@@ -285,7 +301,7 @@ class Maneuver:
         :return: a list of Maneuvers
         """
         tmp = []
-        with alive_bar(amount, bar='classic', title=f'Maneuver {title}', ctrl_c=False) as bar:
+        with alive_bar(amount, bar='classic', title=f'{self.__name:14}', ctrl_c=False) as bar:
             for _ in range(amount):
                 rand_angle = randrange(0, 360 * 4) / 4
                 rand_inv = round(uniform(0, 1.75), 2)
@@ -323,7 +339,10 @@ class Maneuver:
         return len(self.__nodes)
     
     
-    def set_to_new_length(self, total_length):
-        amount_new_elements = total_length - len(self)
-        for _ in range(amount_new_elements):
-            self.__nodes.append(State(0, 0, 0, time=-1))
+    def get_numpy_array_part(self, percent):
+        factor = percent/100
+        new_length = round(factor * len(self.__nodes))
+        tmp = self.__nodes.copy()
+        for i in range(new_length, len(tmp)):
+            tmp[i] = np.nan
+        return np.array(tmp)
