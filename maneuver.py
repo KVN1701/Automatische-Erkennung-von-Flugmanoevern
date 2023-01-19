@@ -301,7 +301,7 @@ class Maneuver:
         :return: a list of Maneuvers
         """
         tmp = []
-        with alive_bar(amount, bar='classic', title=f'{self.__name:14}', ctrl_c=False) as bar:
+        with alive_bar(amount, bar='classic', title=f'{self.__name:15}', ctrl_c=False) as bar:
             for _ in range(amount):
                 rand_angle = randrange(0, 360 * 4) / 4
                 rand_inv = round(uniform(0, 1.75), 2)
