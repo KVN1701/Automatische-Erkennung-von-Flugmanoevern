@@ -23,7 +23,7 @@ total_time = time()
 model = keras.models.load_model("best_model.h5")
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 5000
+train_amount = 4000
 
 # The amount of test maneuvers that will be generated
 test_amount = 50

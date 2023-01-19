@@ -36,7 +36,7 @@ def predict_single(maneuver, draw_plot=True):
     print(f'\nErkennung von Manöver {maneuver.get_name()}')
     
     for i in range(len(probabilities)):
-        print(f'{maneuver_dict[i]:14}: {probabilities[i]}%')
+        print(f'{maneuver_dict[i]:15}: {probabilities[i]}%')
         
     if (pred_string == maneuver.get_name()):
         print(f'\nVorhersage: \033[92m{pred_string}\033[0m')
