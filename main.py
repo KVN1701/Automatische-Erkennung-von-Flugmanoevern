@@ -46,18 +46,19 @@ def predict_single(maneuver, draw_plot=True):
     
  
 if __name__ == '__main__':
-    amount = 20
+    amount = 40
     singular_amount = round(amount/len(maneuver_dict))
     
     test_m = [
         parse_file('Abschwung').generate_maneuvers(singular_amount),
         parse_file('LangsamerJoJo').generate_maneuvers(singular_amount),
         parse_file('Looping').generate_maneuvers(singular_amount),
-        parse_file('SchnellerJoJo').generate_maneuvers(singular_amount)
+        parse_file('SchnellerJoJo').generate_maneuvers(singular_amount),
+        parse_file('Kertwende').generate_maneuvers(singular_amount)
     ]
     
     for sublist in test_m:
         for m in sublist:
             predict_single(m, False)
-    # test_KI(50)
+    test_KI(50)
 

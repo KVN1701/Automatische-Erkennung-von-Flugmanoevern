@@ -9,10 +9,12 @@ from time import time
 """
 ! 3000_Einheiten_4_Maneuver_weniger_Einheiten_oder_Manoever_reichen_auch.png 1 hours 55 minutes and 11.32 seconds
 ! 2000_Einheiten_4Manoever 42 min 57.60 sec
+! 3000_Einheiten_5Manoever 2 h 10 min 23.76 sec
 """
 
 
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
+print(tf.config.list_physical_devices('GPU'))
 
 
 total_time = time()
@@ -21,7 +23,7 @@ total_time = time()
 model = keras.models.load_model("best_model.h5")
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 3000 # 0.76 bei 1000 und 3 Manövern bei 1500 keine Verbesserung, 3000 --> 100%
+train_amount = 5000
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
@@ -109,5 +111,5 @@ plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
 fig = plt.gcf()
 plt.show()
-fig.savefig(f'D:/LOKALE DATEN/Programming/PycharmProjects/Bachelorarbeit.graphen/{train_amount}_Einheiten_{len(maneuvers)}_Manoever.png')
+fig.savefig(f'graphs/{train_amount}_Einheiten_{len(maneuvers)}_Manoever.png')
 plt.close()

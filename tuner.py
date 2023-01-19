@@ -7,12 +7,27 @@ from helpful_methods import generate_dataset, format_time
 import numpy as np
 import time
 
+
 # ? https://www.tensorflow.org/install/pip?_gl=1*1fjkigb*_ga*MTM1NzAzMjA1NS4xNjY3NDg2MzYw*_ga_W0YLR4190T*MTY3MzM4MjMzNC4xNC4wLjE2NzMzODIzMzQuMC4wLjA.#windows-wsl2_1
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 print(tf.config.list_physical_devices('GPU'))
 
 
-# ! 4 Manöver 05h 54m 38s
+"""
+! 4 Manöver 05h 54m 38s
+"""
+
+"""
+? ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+? tensorflow-gpu 2.10.1 requires keras<2.11,>=2.10.0, but you have keras 2.11.0 which is incompatible.
+? tensorflow-gpu 2.10.1 requires tensorboard<2.11,>=2.10, but you have tensorboard 2.11.2 which is incompatible.
+? tensorflow-gpu 2.10.1 requires tensorflow-estimator<2.11,>=2.10.0, but you have tensorflow-estimator 2.11.0 which is incompatible.
+
+? ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+? tensorflow-intel 2.11.0 requires keras<2.12,>=2.11.0, but you have keras 2.10.0 which is incompatible.
+? tensorflow-intel 2.11.0 requires tensorboard<2.12,>=2.11, but you have tensorboard 2.10.1 which is incompatible.
+? tensorflow-intel 2.11.0 requires tensorflow-estimator<2.12,>=2.11.0, but you have tensorflow-estimator 2.10.0 which is incompatible.
+"""
 
 
 LOG_NAME = f"{int(time.time())}"

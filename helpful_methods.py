@@ -49,7 +49,8 @@ maneuvers = [
     parse_file("Looping"),
     parse_file("LangsamerJoJo"),
     parse_file("SchnellerJoJo"),
-    parse_file("Abschwung")
+    parse_file("Abschwung"),
+    parse_file("Kertwende")
 ]
 
 # dictionary which links an index to a Maneuver
@@ -57,7 +58,8 @@ maneuver_dict = {
     0 : 'Looping',
     1 : 'Langsamer JoJo',
     2 : 'Schneller JoJo',
-    3 : 'Abschwung'
+    3 : 'Abschwung',
+    4 : 'Kertwende'
 }
 
 

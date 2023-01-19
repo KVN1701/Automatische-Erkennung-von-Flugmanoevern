@@ -52,4 +52,4 @@ def draw_maneuvers(maneuvers: list):
      plt.show()
      
      
-draw_maneuvers(parse_file("Looping").generate_maneuvers(5))
+# draw_maneuvers(parse_file("Looping").generate_maneuvers(5))
