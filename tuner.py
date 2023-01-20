@@ -14,10 +14,6 @@ print(tf.config.list_physical_devices('GPU'))
 
 
 """
-! 4 Manöver 05h 54m 38s
-"""
-
-"""
 ? ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
 ? tensorflow-gpu 2.10.1 requires keras<2.11,>=2.10.0, but you have keras 2.11.0 which is incompatible.
 ? tensorflow-gpu 2.10.1 requires tensorboard<2.11,>=2.10, but you have tensorboard 2.11.2 which is incompatible.

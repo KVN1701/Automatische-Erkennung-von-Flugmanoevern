@@ -20,10 +20,10 @@ print(tf.config.list_physical_devices('GPU'))
 total_time = time()
 
 # The model that will be used
-model = keras.models.load_model("best_model.h5")
+model = keras.models.load_model("tuner_models/1674175924.h5")
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 4000
+train_amount = 3000
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
