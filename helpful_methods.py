@@ -56,8 +56,8 @@ maneuvers = [
 # dictionary which links an index to a Maneuver
 maneuver_dict = {
     0 : 'Looping',
-    1 : 'Langsamer JoJo',
-    2 : 'Schneller JoJo',
+    1 : 'LangsamerJoJo',
+    2 : 'SchnellerJoJo',
     3 : 'Abschwung',
     4 : 'Kertwende'
 }
