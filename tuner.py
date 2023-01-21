@@ -59,7 +59,7 @@ def build_model(hp):
     for i in range(hp.Int("layers", 1, 4)):
         model.add(Conv2D(hp.Int(f"conv_{i}_units", min_value=32, max_value=512, step=32), kernel_size=3, padding="same"))
         model.add(BatchNormalization())
-        model.add(ReLU())
+        model.add(ReLU()) # TODO: Prüfen ob besseres Ergebnis ohne ReLU
         
     model.add(GlobalAveragePooling2D())
     model.add(Dense(num_classes, activation="softmax"))

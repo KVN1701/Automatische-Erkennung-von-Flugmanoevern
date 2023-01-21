@@ -51,5 +51,6 @@ def draw_maneuvers(maneuvers: list):
           __draw_help(m)
      plt.show()
      
-     
-# draw_maneuvers(parse_file("Looping").generate_maneuvers(5))
+
+if __name__ == '__main__':  
+     draw_maneuvers(parse_file("Immelmann_rechts").generate_maneuvers(5, mirror=False))

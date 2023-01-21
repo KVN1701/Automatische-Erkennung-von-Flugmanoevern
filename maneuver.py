@@ -301,11 +301,11 @@ class Maneuver:
         :return: a list of Maneuvers
         """
         tmp = []
-        with alive_bar(amount, bar='classic', title=f'{self.__name:15}->', ctrl_c=False) as bar:
+        with alive_bar(amount, bar='classic', title=f'{self.__name:19}->', ctrl_c=False) as bar:
             for _ in range(amount):
                 rand_angle = randrange(0, 360 * 4) / 4
                 rand_inv = round(uniform(0, 1.75), 2)
-                mirror = choice([True, False]) if mirror else False
+                enable_mirror = choice([True, False]) if mirror else False
                 move_x, move_y, move_z = randrange(-800, 800) / 2, randrange(-800, 800) / 2, randrange(-800, 800) / 2
                 stretch_x, stretch_y, stretch_z = randrange(-50, 50) / 2, randrange(-50, 50) / 2, randrange(-50, 50) / 2
                 
@@ -314,7 +314,7 @@ class Maneuver:
 
                 m = self.turn(angle) if angle is not None else self.turn(rand_angle)
                 m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
-                m = m.mirror(mirror)
+                m = m.mirror(enable_mirror)
                 m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
                 m = m.stretch(stretch_x, stretch_y, stretch_z) if stretch_defined else m.stretch(dist_stretch_x, dist_stretch_y, dist_stretch_z)
                 
