@@ -22,10 +22,10 @@ print(tf.config.list_physical_devices('GPU'))
 total_time = time()
 
 # The model that will be used
-model = keras.models.load_model("best_model.h5")
+model = keras.models.load_model("tuner_models/1674464273.h5")
 
 # The amount of maneuvers that will be generated for every maneuver in maneuvers
-train_amount = 12000
+train_amount = 2000
 
 # The amount of test maneuvers that will be generated
 test_amount = 50
@@ -113,5 +113,5 @@ plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
 fig = plt.gcf()
 plt.show()
-fig.savefig(f'graphs/{train_amount}_Einheiten_{len(maneuvers)}_Manoever.png')
+fig.savefig(f'graphs/{train_amount}_Einheiten_{len(maneuvers)}_Manoever_{time()}.png')
 plt.close()

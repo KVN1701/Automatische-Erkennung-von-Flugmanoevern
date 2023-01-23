@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Dense, Conv2D, Input, GlobalAveragePooling2D, ReLU, BatchNormalization, Flatten
+from keras.layers import *
 from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters
 from helpful_methods import generate_dataset, format_time
@@ -48,7 +48,6 @@ x_train = x_train[idx]
 y_train = y_train[idx]
 
 
-print(x_train.shape)
 def build_model(hp):
     model = keras.models.Sequential()
     
@@ -59,9 +58,8 @@ def build_model(hp):
     for i in range(hp.Int("layers", 1, 4)):
         model.add(Conv2D(hp.Int(f"conv_{i}_units", min_value=32, max_value=512, step=32), kernel_size=3, padding="same"))
         model.add(BatchNormalization())
-        model.add(ReLU()) # TODO: Prüfen ob besseres Ergebnis ohne ReLU
         
-    model.add(GlobalAveragePooling2D())
+    model.add(GlobalMaxPooling2D())
     model.add(Dense(num_classes, activation="softmax"))
     
     model.compile(optimizer="adam",
@@ -88,7 +86,7 @@ early_stop = [
 
 tuner.search(x=x_train,
              y=y_train,
-             epochs=200,
+             epochs=100,
              batch_size=32,
              validation_data=(x_test, y_test),
              callbacks=early_stop)
