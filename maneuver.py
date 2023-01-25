@@ -339,10 +339,5 @@ class Maneuver:
         return len(self.__nodes)
     
     
-    def get_numpy_array_part(self, percent):
-        factor = percent/100
-        new_length = round(factor * len(self.__nodes))
-        tmp = self.__nodes.copy()
-        for i in range(new_length, len(tmp)):
-            tmp[i] = np.nan
-        return np.array(tmp)
+    def get_partial(self, length):
+        return Maneuver(self.__nodes[:length], name=self.__name)
