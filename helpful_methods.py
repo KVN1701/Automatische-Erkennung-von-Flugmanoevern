@@ -51,8 +51,6 @@ maneuvers = [
     parse_file("SchnellerJoJo"),
     parse_file("Abschwung"),
     parse_file("Kertwende"),
-    parse_file("Immelmann_rechts"),
-    parse_file("Immelmann_links")
 ]
 
 # dictionary which links an index to a Maneuver
@@ -62,21 +60,9 @@ maneuver_dict = {
     2 : 'SchnellerJoJo',
     3 : 'Abschwung',
     4 : 'Kertwende',
-    5 : 'Immelmann_rechts',
-    6 : 'Immelmann_links'
 }
 
 # True if mirroring the maneuver should be allowed
-enable_mirroring = {
-    0 : True,
-    1 : True,
-    2 : True,
-    3 : True,
-    4 : True,
-    5 : False,
-    6 : False
-}
-
 
 def generate_dataset(amount):
     """
@@ -91,7 +77,7 @@ def generate_dataset(amount):
     tmp = []
     for i in range(len(maneuvers)):
         m = maneuvers[i]
-        tmp.extend(m.generate_maneuvers(amount, mirror=enable_mirroring[i]))
+        tmp.extend(m.generate_maneuvers(amount))
         
     # converting the maneuvers to numpy arrays
     for m in tmp:

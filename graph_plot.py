@@ -53,4 +53,4 @@ def draw_maneuvers(maneuvers: list):
      
 
 if __name__ == '__main__':  
-     draw_maneuvers(parse_file("Immelmann_rechts").generate_maneuvers(5, mirror=False))
+     pass

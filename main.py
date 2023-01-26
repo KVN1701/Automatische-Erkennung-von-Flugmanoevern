@@ -65,8 +65,6 @@ if __name__ == '__main__':
         parse_file('Looping').generate_maneuvers(singular_amount),
         parse_file('SchnellerJoJo').generate_maneuvers(singular_amount),
         parse_file('Kertwende').generate_maneuvers(singular_amount),
-        parse_file('Immelmann_rechts').generate_maneuvers(singular_amount, mirror=False),
-        parse_file('Immelmann_links').generate_maneuvers(singular_amount, mirror=False)
     ]
     
     for sublist in test_m:
