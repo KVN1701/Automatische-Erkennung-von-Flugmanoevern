@@ -8,14 +8,27 @@ from maneuver import *
 model = keras.models.load_model('best_model.h5')
 
 
-"""
-! Immelmann rechts   : 43.6482%
-! Immelmann links    : 56.3478%
-! Erkennung korrekt aber Werte nicht nah genug aneinander
-! 
-! Immelmann rechts   : 16.6042%
-! Immelmann links    : 83.3843%
-! Werte durch verbieten von mirror deutlich verbessert, allerdings immer noch nicht optimal
+"""+
+* Das Manöver Looping wird bei einer durchschnittlichen Länge von 232.68 erkannt.
+* Dies entspricht 77.56% der Gesamtlänge des Manövers.
+* 
+* Das Manöver LangsamerJoJo wird bei einer durchschnittlichen Länge von 200.08 erkannt.
+* Dies entspricht 66.69% der Gesamtlänge des Manövers.
+* 
+* Das Manöver SchnellerJoJo wird bei einer durchschnittlichen Länge von 206.13 erkannt.
+* Dies entspricht 68.71% der Gesamtlänge des Manövers.
+* 
+* Das Manöver Abschwung wird bei einer durchschnittlichen Länge von 163.42 erkannt.
+* Dies entspricht 54.47% der Gesamtlänge des Manövers.
+* 
+* Das Manöver Kertwende wird bei einer durchschnittlichen Länge von 255.28 erkannt.
+* Dies entspricht 85.09% der Gesamtlänge des Manövers.
+* 
+* Das Manöver Immelmann_rechts wird bei einer durchschnittlichen Länge von 242.00 erkannt.
+* Dies entspricht 80.67% der Gesamtlänge des Manövers.
+* 
+* Das Manöver Immelmann_links wird bei einer durchschnittlichen Länge von 232.66 erkannt.
+* Dies entspricht 77.55% der Gesamtlänge des Manövers.
 """
 
 
