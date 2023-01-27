@@ -3,36 +3,19 @@ from helpful_methods import parse_file, generate_dataset, maneuver_dict, maneuve
 import numpy as np
 from graph_plot import *
 from maneuver import *
+from texttable import Texttable
 
 
+# The model that will be used
 model = keras.models.load_model('best_model.h5')
 
 
-"""+
-* Das Manöver Looping wird bei einer durchschnittlichen Länge von 232.68 erkannt.
-* Dies entspricht 77.56% der Gesamtlänge des Manövers.
-* 
-* Das Manöver LangsamerJoJo wird bei einer durchschnittlichen Länge von 200.08 erkannt.
-* Dies entspricht 66.69% der Gesamtlänge des Manövers.
-* 
-* Das Manöver SchnellerJoJo wird bei einer durchschnittlichen Länge von 206.13 erkannt.
-* Dies entspricht 68.71% der Gesamtlänge des Manövers.
-* 
-* Das Manöver Abschwung wird bei einer durchschnittlichen Länge von 163.42 erkannt.
-* Dies entspricht 54.47% der Gesamtlänge des Manövers.
-* 
-* Das Manöver Kertwende wird bei einer durchschnittlichen Länge von 255.28 erkannt.
-* Dies entspricht 85.09% der Gesamtlänge des Manövers.
-* 
-* Das Manöver Immelmann_rechts wird bei einer durchschnittlichen Länge von 242.00 erkannt.
-* Dies entspricht 80.67% der Gesamtlänge des Manövers.
-* 
-* Das Manöver Immelmann_links wird bei einer durchschnittlichen Länge von 232.66 erkannt.
-* Dies entspricht 77.55% der Gesamtlänge des Manövers.
-"""
-
-
 def test_KI(amount):
+    """
+    Testing the neural network using the evaluate method given by tensorflow
+    
+    :param amount: size of the testing data
+    """
     # Generating a dataset of test values
     x_test, y_test = generate_dataset(amount)
 
@@ -44,32 +27,54 @@ def test_KI(amount):
     print('Test loss:', test_loss)
     
     
-def predict_single(maneuver, draw_plot=True):
+    
+def predict_single(maneuver, draw_plot=True, allow_print=True):
+    """
+    Gives a prediction of a single maneuver displaying the percentage the
+    maneuver resembles a maneuver
+    
+    :param maneuver: the maneuver that will be tested
+    :param draw_plot: True if the maneuver should be displayed in a plot
+    :param allow_print: True if the output should be printed
+    :return: True if the maneuver was predicted correctly
+    """
     # drawing the plot
     if draw_plot:
         draw_maneuvers([maneuver])
         
+    # ? When a partial maneuver should be displayed there has to be a normal test before it
+        
     x_test = np.array([maneuver.get_numpy_array()])
-    print(x_test.shape)
     prediction = model.predict(x_test)
     
     # reformating the values from prediction
     probabilities = [round(float(val) * 100, 4) for pred in prediction for val in pred]
+    
+    # name of the predicted maneuver
     pred_string = maneuver_dict[probabilities.index(max(probabilities))]
     
-    print(f'\nErkennung von Manöver {maneuver.get_name()}')
-    
-    for i in range(len(probabilities)):
-        print(f'{maneuver_dict[i]:19}: {probabilities[i]}%')
+    if allow_print:
+        print(f'\nErkennung von Manöver {maneuver.get_name()}')
+        for i in range(len(probabilities)):
+            print(f'{maneuver_dict[i]:19}: {probabilities[i]}%')
         
     if pred_string == maneuver.get_name():
-        print(f'\nVorhersage: \033[92m{pred_string}\033[0m')
+        if allow_print:
+            print(f'\nVorhersage: \033[92m{pred_string}\033[0m')
+        return True
     else:
-        print(f'\nVorhersage: \033[31m{pred_string}\033[0m')
+        if allow_print:
+            print(f'\nVorhersage: \033[31m{pred_string}\033[0m')
+        return False
     
     
     
 def standard_test(amount):
+    """
+    The standard test consisting of a single prediction of every maneuver.
+    
+    :param amount: the testing amount
+    """
     singular_amount = round(amount/len(maneuver_dict))
     
     test_m = [
@@ -84,41 +89,22 @@ def standard_test(amount):
     
     for sublist in test_m:
         for m in sublist:
-            predict_single(m, False)
-    test_KI(50)
-    
+            predict_single(m, draw_plot=False)
     
 
-def pred_partial_single(maneuver, allow_print=True):
-    partial_m_arr = np.array([maneuver.get_numpy_array()])
-    
-    # ? Warum muss vorher eine prediction eines vollen Manövers ausgeführt werden?
-    #model.predict(np.array([maneuver.get_numpy_array()]))
-    prediction = model.predict(partial_m_arr)
-    
-    # reformating the values from prediction
-    probabilities = [round(float(val) * 100, 4) for pred in prediction for val in pred]
-    pred_string = maneuver_dict[probabilities.index(max(probabilities))]
-    
-    if allow_print:
-        print(f'\nErkennung von Manöver {maneuver.get_name()}')
-    
-        for i in range(len(probabilities)):
-            print(f'{maneuver_dict[i]:19}: {probabilities[i]}%')
-        
-    if pred_string == maneuver.get_name():
-        print(f'\nVorhersage: \033[92m{pred_string}\033[0m')
-        return True
-    else:
-        print(f'\nVorhersage: \033[31m{pred_string}\033[0m')
-        return False
-    
-    
     
 def predict_partial_maneuver(maneuver, draw_plot=True):
+    """
+    Predicting a partial maneuver starting by a full maneuver and 
+    decreasing the size until the maneuver is no longer correctly recognized.
+    Also prints the length to which it was still recognized.
+    
+    :param maneuver: the maneuver that will be tested
+    :param draw_plot: True if the maneuver should be displayed in a plot
+    """
     for length in range(300, 1, -1):
         m = maneuver.get_partial(length)
-        prediction = pred_partial_single(m, allow_print=False)
+        prediction = predict_single(m, allow_print=False, draw_plot=False)
         
         if not prediction:
             print(f'Das Manöver wurde mit einer Länge von {min(length + 1, len(maneuver))} noch richtig erkannt ({((min(length + 1, len(maneuver))/len(maneuver)) * 100):.2f}%).')
@@ -131,6 +117,14 @@ def predict_partial_maneuver(maneuver, draw_plot=True):
 
 
 def predict_partial_amount(maneuver, amount, allow_print=True):
+    """
+    Uses predict_partial_maneuver() multiple times to determine an average value
+    for the length the maneuver is still recognized.
+    
+    :param maneuver: the maneuver that should be tested
+    :param amount: the testing amount for the maneuver
+    :param allow_print: True if the result should be printed
+    """
     scores = []
     for m in maneuver.generate_maneuvers(amount):
         scores.append(predict_partial_maneuver(m, False))
@@ -144,15 +138,25 @@ def predict_partial_amount(maneuver, amount, allow_print=True):
         
 
 def predict_partial_all(amount_per_maneuver):
+    """
+    Uses predict_partial_amount() to evaluate all maneuvers
+    
+    :param amount_per_maneuver: the training amount for every maneuver
+    """
     all_scores = []
     
     for m in maneuvers:
         all_scores.append(predict_partial_amount(m, amount_per_maneuver, allow_print=False))
-        
+    
+    rows = [['Manöver', 'Länge', 'in %']]
     for i, score in enumerate(all_scores):
-        print(f'\nDas Manöver {maneuver_dict[i]} wird bei einer durchschnittlichen Länge von {score:.2f} erkannt.')
-        print(f'Dies entspricht {score/300 * 100:.2f}% der Gesamtlänge des Manövers.')
+        rows.append([maneuver_dict[i], f'{min(score, 300):.2f}', f'{min(score, 300)/300 * 100:.2}'])
+    
+    t = Texttable()
+    t.add_rows(rows)
+    print(t.draw())
  
- 
+
 if __name__ == '__main__':
-    predict_partial_all(100)
+    # predict_partial_all(1)
+    standard_test(50)
