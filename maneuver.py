@@ -86,8 +86,7 @@ class State:
         return State(x, y, z, self.__rot, self.__time)
     
     
-    def get_numpy_array(self): # TODO: Testen ob ein hinzufügen von mehreren Daten mehr
-        # return np.array([self.__x, self.__y, self.__z, self.__rot, self.__time])
+    def get_numpy_array(self):
         return np.array([self.__x, self.__y, self.__z])
     
     
@@ -142,9 +141,6 @@ class Maneuver:
     def __str__(self) -> str:
         rslt = "["
         for state in self.__nodes:
-            if state is np.nan:
-                rslt += "NaN"
-                continue
             rslt += str(state) + ",\n"
         rslt = rslt[:-2] + "]"
         return rslt  
@@ -157,14 +153,14 @@ class Maneuver:
     def getTotalTime(self):
         return self.__nodes[-1].getTime()
     
-    
+ 
     def get_name(self):
         return self.__name
 
 
     def __get_center(self):
         """
-        :return: A state which is in the middle of the Maneuver
+        :return: an instance of State which is in the center of the Maneuver
         """
         min_x, min_y, min_z, max_x, max_y, max_z = 0, 0, 0, 0, 0, 0
         for n in self.__nodes:
@@ -177,6 +173,7 @@ class Maneuver:
         return (min_x + max_x) / 2, (min_y + max_y) / 2, (min_z + max_z) / 2
 
 
+
     def randomize(self, max_inv: float = round(uniform(0, 1.75), 2)):
         """
         Returns a random generated Maneuver. Every point is moved in a random distance from
@@ -187,6 +184,7 @@ class Maneuver:
         """
         tmp = [n.randomize(max_inv) for n in self.__nodes]
         return Maneuver(tmp, name=self.__name)
+
 
 
     def turn(self, angle: float = randrange(0, 360 * 4) / 4):  # Zufällige Gradzahl in 0.5er Schritten
@@ -206,8 +204,9 @@ class Maneuver:
             # Anwenden der Rotationsmatrix
             tmp_x = (math.cos(rad_angle) * (n_x - c_x) + math.sin(rad_angle) * (n_y - c_y)) + c_x
             tmp_y = (-math.sin(rad_angle) * (n_x - c_x) + math.cos(rad_angle) * (n_y - c_y)) + c_y
-            tmp.append(State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime()))  # TODO: Rotation muss noch geupdated werden
+            tmp.append(State(tmp_x, tmp_y, n_z, n.getRotation(), n.getTime()))
         return Maneuver(tmp, name=self.__name)
+
 
 
     def stretch(self,
@@ -233,6 +232,7 @@ class Maneuver:
         return Maneuver(tmp, name=self.__name)
 
 
+
     def move(self, 
              distance_x: float = randrange(-800, 800) / 2,
              distance_y: float = randrange(-800, 800) / 2,
@@ -252,6 +252,7 @@ class Maneuver:
             n.getTime(),
             n.getRotation()
         ) for n in self.__nodes], name=self.__name)
+
 
 
     def mirror(self, mirror: bool = True):
@@ -324,6 +325,9 @@ class Maneuver:
 
 
     def getTotalDistance(self):
+        """
+        return: the total distance the plane flies in the maneuver
+        """
         last_element = self.__nodes[-1]
         return round(last_element.getTime() * self.__speed, 1) # in Meters
 
@@ -340,4 +344,8 @@ class Maneuver:
     
     
     def get_partial(self, length):
+        """
+        :param length: the length of the new maneuver
+        return: a partial maneuver with the given length
+        """
         return Maneuver(self.__nodes[:length], name=self.__name)

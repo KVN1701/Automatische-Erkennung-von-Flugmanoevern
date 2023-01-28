@@ -43,7 +43,6 @@ def predict_single(maneuver, draw_plot=True, allow_print=True):
         draw_maneuvers([maneuver])
         
     # ? When a partial maneuver should be displayed there has to be a normal test before it
-        
     x_test = np.array([maneuver.get_numpy_array()])
     prediction = model.predict(x_test)
     
@@ -89,7 +88,7 @@ def standard_test(amount):
     
     for sublist in test_m:
         for m in sublist:
-            predict_single(m, draw_plot=False)
+            predict_single(m, draw_plot=True)
     
 
     
@@ -110,13 +109,17 @@ def predict_partial_maneuver(maneuver, draw_plot=True):
             print(f'Das Manöver wurde mit einer Länge von {min(length + 1, len(maneuver))} noch richtig erkannt ({((min(length + 1, len(maneuver))/len(maneuver)) * 100):.2f}%).')
             
             if draw_plot:
-                draw_maneuvers([maneuver.get_partial(min(length + 1, len(maneuver)))])
+                print('\nIn blau dargestellt ist der Teil des Manövers, der notwendig war, um das Manöver zu erkennen.')
+                print('Das komplette Manöver wird daneben in orange als Referenz abgebildet.\n')
+                draw_m = maneuver.get_partial(length + 1)
+                draw_updated_maneuvers([draw_m, maneuver.move(0, 400, 0)])
+                
             return length + 1
     return len(maneuver)
 
 
 
-def predict_partial_amount(maneuver, amount, allow_print=True):
+def predict_partial_amount(maneuver, amount, allow_print=True, draw_plot=True):
     """
     Uses predict_partial_maneuver() multiple times to determine an average value
     for the length the maneuver is still recognized.
@@ -127,7 +130,14 @@ def predict_partial_amount(maneuver, amount, allow_print=True):
     """
     scores = []
     for m in maneuver.generate_maneuvers(amount):
-        scores.append(predict_partial_maneuver(m, False))
+        score = predict_partial_maneuver(m, draw_plot=False)
+        scores.append(score)
+        
+        if draw_plot:
+            print('\nIn blau dargestellt ist der Teil des Manövers, der notwendig war, um das Manöver zu erkennen.')
+            print('Das komplette Manöver wird daneben in orange als Referenz abgebildet.\n')
+            draw_m = maneuver.get_partial(round(score))
+            draw_updated_maneuvers([draw_m, maneuver.move(0, 400, 0)])
         
     average_score = sum(scores)/len(scores)
     if allow_print:
@@ -137,7 +147,7 @@ def predict_partial_amount(maneuver, amount, allow_print=True):
         
         
 
-def predict_partial_all(amount_per_maneuver):
+def predict_partial_all(amount_per_maneuver, draw_plot=True):
     """
     Uses predict_partial_amount() to evaluate all maneuvers
     
@@ -146,7 +156,13 @@ def predict_partial_all(amount_per_maneuver):
     all_scores = []
     
     for m in maneuvers:
-        all_scores.append(predict_partial_amount(m, amount_per_maneuver, allow_print=False))
+        score = predict_partial_amount(m, amount_per_maneuver, draw_plot=False, allow_print=False)
+        all_scores.append(score)
+        if draw_plot:
+            print('\nIn blau dargestellt ist der Teil des Manövers, der notwendig war, um das Manöver zu erkennen.')
+            print('Das komplette Manöver wird daneben in orange als Referenz abgebildet.\n')
+            draw_m = m.get_partial(round(score))
+            draw_updated_maneuvers([draw_m, m.move(0, 400, 0)])
     
     rows = [['Manöver', 'Länge', 'in %']]
     for i, score in enumerate(all_scores):
@@ -158,5 +174,5 @@ def predict_partial_all(amount_per_maneuver):
  
 
 if __name__ == '__main__':
-    # predict_partial_all(1)
-    standard_test(50)
+    predict_partial_all(1000)
+    # standard_test(50)
