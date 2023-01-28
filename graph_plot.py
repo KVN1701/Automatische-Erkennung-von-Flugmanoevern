@@ -4,9 +4,9 @@ from maneuver import Maneuver, State
 from helpful_methods import parse_file
 
 
+#plt.ion()
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.legend()
+ax = plt.axes(projection='3d')
 ax.set_aspect('equal', adjustable='box')
 
 lim_min = 100000000000
@@ -43,7 +43,8 @@ def __draw_help(maneuver):
      ax.set_zlim3d(lim_min, lim_max)
      
      # plot setup
-     ln, = ax.plot(xs, ys, zs)
+     ax.plot3D(xs, ys, zs)
+     
      
      
 def draw_maneuvers(maneuvers: list):
@@ -51,5 +52,15 @@ def draw_maneuvers(maneuvers: list):
           __draw_help(m)
      plt.show()
      
+
+def draw_updated_maneuvers(maneuvers: list):
+     global ax
+     plt.clf()
+     ax = plt.axes(projection='3d')
+     for m in maneuvers:
+          __draw_help(m)
+     plt.show()
      
-# draw_maneuvers(parse_file("Looping").generate_maneuvers(5))
+
+if __name__ == '__main__':  
+     draw_maneuvers(parse_file("Immelmann_rechts").generate_maneuvers(5, mirror=False))

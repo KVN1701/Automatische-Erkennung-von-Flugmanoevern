@@ -50,7 +50,9 @@ maneuvers = [
     parse_file("LangsamerJoJo"),
     parse_file("SchnellerJoJo"),
     parse_file("Abschwung"),
-    parse_file("Kertwende")
+    parse_file("Kertwende"),
+    parse_file("Immelmann_rechts"),
+    parse_file("Immelmann_links")
 ]
 
 # dictionary which links an index to a Maneuver
@@ -59,7 +61,20 @@ maneuver_dict = {
     1 : 'LangsamerJoJo',
     2 : 'SchnellerJoJo',
     3 : 'Abschwung',
-    4 : 'Kertwende'
+    4 : 'Kertwende',
+    5 : 'Immelmann_rechts',
+    6 : 'Immelmann_links'
+}
+
+# True if mirroring the maneuver should be allowed
+enable_mirroring = {
+    0 : True,
+    1 : True,
+    2 : True,
+    3 : True,
+    4 : True,
+    5 : False,
+    6 : False
 }
 
 
@@ -69,14 +84,14 @@ def generate_dataset(amount):
     
     :param amount: the amount of training data
     :return: the dataset in a tuple containing the data and labels
-    """    
-    num_of_maneuvers = len(maneuvers)
+    """
     
     # generating the maneuvers to train/ test the neural network
     x_dataset = []
     tmp = []
-    for m in maneuvers: 
-        tmp.extend(m.generate_maneuvers(amount))
+    for i in range(len(maneuvers)):
+        m = maneuvers[i]
+        tmp.extend(m.generate_maneuvers(amount, mirror=enable_mirroring[i]))
         
     # converting the maneuvers to numpy arrays
     for m in tmp:
@@ -85,7 +100,7 @@ def generate_dataset(amount):
     
     # generating the labels for the dataset
     y_dataset = []
-    for i in range(num_of_maneuvers):
+    for i in range(len(maneuvers)):
         y_dataset.extend([i for _ in range(amount)])
     y_dataset = np.array(y_dataset, dtype=int)
     

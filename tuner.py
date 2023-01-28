@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Dense, Conv2D, Input, GlobalAveragePooling2D, ReLU, BatchNormalization, Flatten
+from keras.layers import *
 from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters
 from helpful_methods import generate_dataset, format_time
@@ -12,10 +12,6 @@ import time
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 print(tf.config.list_physical_devices('GPU'))
 
-
-"""
-! 4 Manöver 05h 54m 38s
-"""
 
 """
 ? ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
@@ -52,7 +48,6 @@ x_train = x_train[idx]
 y_train = y_train[idx]
 
 
-print(x_train.shape)
 def build_model(hp):
     model = keras.models.Sequential()
     
@@ -63,9 +58,8 @@ def build_model(hp):
     for i in range(hp.Int("layers", 1, 4)):
         model.add(Conv2D(hp.Int(f"conv_{i}_units", min_value=32, max_value=512, step=32), kernel_size=3, padding="same"))
         model.add(BatchNormalization())
-        model.add(ReLU())
         
-    model.add(GlobalAveragePooling2D())
+    model.add(GlobalMaxPooling2D())
     model.add(Dense(num_classes, activation="softmax"))
     
     model.compile(optimizer="adam",
@@ -92,7 +86,7 @@ early_stop = [
 
 tuner.search(x=x_train,
              y=y_train,
-             epochs=200,
+             epochs=100,
              batch_size=32,
              validation_data=(x_test, y_test),
              callbacks=early_stop)
