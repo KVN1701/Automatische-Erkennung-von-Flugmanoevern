@@ -1,4 +1,5 @@
 from tensorflow import keras
+import tensorflow as tf
 from helpful_methods import parse_file, generate_dataset, maneuver_dict, maneuvers
 import numpy as np
 from graph_plot import *
@@ -8,6 +9,10 @@ from texttable import Texttable
 
 # The model that will be used
 model = keras.models.load_model('best_model.h5')
+
+
+sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
+print(tf.config.list_physical_devices('GPU'))
 
 
 def test_KI(amount):
@@ -174,5 +179,5 @@ def predict_partial_all(amount_per_maneuver, draw_plot=True):
  
 
 if __name__ == '__main__':
-    predict_partial_all(1000)
+    predict_partial_all(150, draw_plot=False)
     # standard_test(50)
