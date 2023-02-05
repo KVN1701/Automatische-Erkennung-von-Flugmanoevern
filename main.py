@@ -1,6 +1,6 @@
 from tensorflow import keras
 import tensorflow as tf
-from helpful_methods import parse_file, generate_dataset, maneuver_dict, maneuvers
+from helpful_methods import parse_file, generate_dataset, maneuver_dict, maneuvers, enable_mirroring
 import numpy as np
 from graph_plot import *
 from maneuver import *
@@ -13,6 +13,7 @@ model = keras.models.load_model('best_model.h5')
 
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 print(tf.config.list_physical_devices('GPU'))
+
 
 
 def test_KI(amount):
@@ -30,6 +31,18 @@ def test_KI(amount):
     # Printing the values
     print('Test accuracy:', test_accuracy)
     print('Test loss:', test_loss)
+    
+    
+    
+def predict_all(amount):
+    """
+    The standard test consisting of a single prediction of every maneuver.
+    
+    :param amount: the testing amount for each maneuver
+    """
+    for index, maneuver in enumerate(maneuvers):
+        for rand_man in maneuver.generate_maneuvers(amount, mirror=enable_mirroring[index]):
+            predict_single(rand_man, draw_plot=False)
     
     
     
@@ -72,30 +85,6 @@ def predict_single(maneuver, draw_plot=True, allow_print=True):
         return False
     
     
-    
-def standard_test(amount):
-    """
-    The standard test consisting of a single prediction of every maneuver.
-    
-    :param amount: the testing amount
-    """
-    singular_amount = round(amount/len(maneuver_dict))
-    
-    test_m = [
-        parse_file('Abschwung').generate_maneuvers(singular_amount),
-        parse_file('LangsamerJoJo').generate_maneuvers(singular_amount),
-        parse_file('Looping').generate_maneuvers(singular_amount),
-        parse_file('SchnellerJoJo').generate_maneuvers(singular_amount),
-        parse_file('Kertwende').generate_maneuvers(singular_amount),
-        parse_file('Immelmann_rechts').generate_maneuvers(singular_amount, mirror=False),
-        parse_file('Immelmann_links').generate_maneuvers(singular_amount, mirror=False)
-    ]
-    
-    for sublist in test_m:
-        for m in sublist:
-            predict_single(m, draw_plot=True)
-    
-
     
 def predict_partial_maneuver(maneuver, draw_plot=True):
     """
@@ -179,5 +168,6 @@ def predict_partial_all(amount_per_maneuver, draw_plot=True):
  
 
 if __name__ == '__main__':
-    predict_partial_all(150, draw_plot=False)
-    # standard_test(50)
+    # predict_partial_all(150, draw_plot=False)
+    predict_all(10)
+    # test_KI(50)
