@@ -6,15 +6,6 @@ import matplotlib.pyplot as plt
 from time import time
 
 
-"""
-! 3000_Einheiten_4_Maneuver_weniger_Einheiten_oder_Manoever_reichen_auch.png 1 hours 55 minutes and 11.32 seconds
-! 2000_Einheiten_4Manoever 42 min 57.60 sec
-! 3000_Einheiten_5Manoever 2 h 10 min 23.76 sec
-! 3000_Einheiten_7Manoever 1 h 14 min 51.93 sec
-! 7000_Einheiten_7Manoever 3 h 2 min 49.69 sec
-"""
-
-
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 print(tf.config.list_physical_devices('GPU'))
 
