@@ -54,6 +54,7 @@ def build_model(hp):
     # creating an input layer
     model.add(Input(x_train.shape[1:]))
     
+    
     # random amout of layers between 1 and 4
     for i in range(hp.Int("layers", 1, 4)):
         model.add(Conv2D(hp.Int(f"conv_{i}_units", min_value=32, max_value=512, step=32), kernel_size=3, padding="same"))
