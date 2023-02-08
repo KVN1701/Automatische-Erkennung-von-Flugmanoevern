@@ -1,9 +1,8 @@
 from tensorflow import keras
 import tensorflow as tf
-from helpful_methods import parse_file, generate_dataset, maneuver_dict, maneuvers, enable_mirroring
+from helpful_methods import generate_dataset, maneuver_dict, maneuvers, enable_mirroring
 import numpy as np
-from graph_plot import *
-from maneuver import *
+from graph_plot import draw_maneuvers, draw_updated_maneuvers
 from texttable import Texttable
 
 
