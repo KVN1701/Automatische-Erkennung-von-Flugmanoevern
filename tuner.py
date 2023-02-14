@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.layers import Dense, BatchNormalization, Conv2D, GlobalMaxPooling2D, Input
 from keras_tuner.tuners import RandomSearch
-from keras_tuner.engine.hyperparameters import HyperParameters
 from helpful_methods import generate_dataset, format_time
 import numpy as np
 import time
@@ -40,7 +39,7 @@ def build_model(hp):
     # creating an input layer
     model.add(Input(x_train.shape[1:]))
 
-    # random amout of layers between 1 and 4
+    # random amount of layers between 1 and 4
     for i in range(hp.Int("layers", 1, 4)):
         model.add(Conv2D(hp.Int(f"conv_{i}_units", min_value=32, max_value=512, step=32), kernel_size=3, padding="same"))
         model.add(BatchNormalization())
