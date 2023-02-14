@@ -197,7 +197,7 @@ def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
     dt = pandas.DataFrame(data=csv_data, index=range(1, 301),
                           columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert'])
 
-    # saving to a csv file
+    # saving to excel file
     dt.to_excel(f'excel_files/amount_{amount}/{time.time()}/{maneuver.get_name()}.xlsx')
 
 
