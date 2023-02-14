@@ -198,7 +198,7 @@ def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
                           columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert'])
 
     # saving to a csv file
-    dt.to_excel(f'excel_files/{maneuver.get_name()}_{amount}_{int(time.time())}.xlsx')
+    dt.to_excel(f'excel_files/amount_{amount}/{time.time()}/{maneuver.get_name()}.xlsx')
 
 
 if __name__ == '__main__':
