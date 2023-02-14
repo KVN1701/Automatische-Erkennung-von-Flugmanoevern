@@ -50,7 +50,7 @@ maneuvers = [
     parse_file("LangsamerJoJo"),
     parse_file("SchnellerJoJo"),
     parse_file("Abschwung"),
-    parse_file("Kertwende"),
+    parse_file("Kehrtwende"),
     parse_file("Immelmann_rechts"),
     parse_file("Immelmann_links")
 ]
@@ -61,7 +61,7 @@ maneuver_dict = {
     1 : 'LangsamerJoJo',
     2 : 'SchnellerJoJo',
     3 : 'Abschwung',
-    4 : 'Kertwende',
+    4 : 'Kehrtwende',
     5 : 'Immelmann_rechts',
     6 : 'Immelmann_links'
 }

@@ -312,8 +312,11 @@ class Maneuver:
                 
                 move_defined = move_x is not None and move_y is not None and move_z is not None
                 stretch_defined = stretch_x is not None and stretch_y is not None and stretch_z is not None
+                
+                # change initial_speed to differ the time values of the points
+                m = Maneuver(self.__nodes, initial_speed=randrange(160, 175), name=self.__name) # aktuelle Spanne 15 m/s
 
-                m = self.turn(angle) if angle is not None else self.turn(rand_angle)
+                m = m.turn(angle) if angle is not None else self.turn(rand_angle)
                 m = m.randomize(max_inv) if max_inv is not None else m.randomize(rand_inv)
                 m = m.mirror(enable_mirror)
                 m = m.move(move_x, move_y, move_z) if move_defined else m.move(dist_move_x, dist_move_y, dist_move_z)
