@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from maneuver import Maneuver, State
-from helpful_methods import parse_file
 
 
-#plt.ion()
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 ax.set_aspect('equal', adjustable='box')
@@ -25,42 +21,37 @@ def plot(maneuver):
 
 
 def __draw_help(maneuver):
-     global lim_max, lim_min
-     # translating maneuver to coordinate points
-     xs, ys, zs = plot(maneuver)
+    global lim_max, lim_min
+    # translating maneuver to coordinate points
+    xs, ys, zs = plot(maneuver)
 
-     # setting limitations for the plot
-     lim_min_tmp = min(min(xs), min(ys), min(zs))
-     lim_max_tmp = max(max(xs), max(ys), max(zs))
-     
-     if lim_min > lim_min_tmp:
-          lim_min = lim_min_tmp
-     if lim_max < lim_max_tmp:
-          lim_max = lim_max_tmp
-          
-     ax.set_xlim3d(lim_min, lim_max)
-     ax.set_ylim3d(lim_min, lim_max)
-     ax.set_zlim3d(lim_min, lim_max)
-     
-     # plot setup
-     ax.plot3D(xs, ys, zs)
-     
-     
-     
+    # setting limitations for the plot
+    lim_min_tmp = min(min(xs), min(ys), min(zs))
+    lim_max_tmp = max(max(xs), max(ys), max(zs))
+
+    if lim_min > lim_min_tmp:
+        lim_min = lim_min_tmp
+    if lim_max < lim_max_tmp:
+        lim_max = lim_max_tmp
+
+    ax.set_xlim3d(lim_min, lim_max)
+    ax.set_ylim3d(lim_min, lim_max)
+    ax.set_zlim3d(lim_min, lim_max)
+
+    # plot setup
+    ax.plot3D(xs, ys, zs)
+
+
 def draw_maneuvers(maneuvers: list):
-     for m in maneuvers:
-          __draw_help(m)
-     plt.show()
-     
+    for m in maneuvers:
+        __draw_help(m)
+    plt.show()
+
 
 def draw_updated_maneuvers(maneuvers: list):
-     global ax
-     plt.clf()
-     ax = plt.axes(projection='3d')
-     for m in maneuvers:
-          __draw_help(m)
-     plt.show()
-     
-
-if __name__ == '__main__':  
-     draw_maneuvers(parse_file("Immelmann_rechts").generate_maneuvers(5, mirror=False))
+    global ax
+    plt.clf()
+    ax = plt.axes(projection='3d')
+    for m in maneuvers:
+        __draw_help(m)
+    plt.show()
