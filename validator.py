@@ -7,6 +7,11 @@ from texttable import Texttable
 from maneuver import Maneuver
 import pandas
 import time
+import os
+
+
+# Name of the directory
+LOG_NAME = f'{int(time.time())}'
 
 # The model that will be used
 model = keras.models.load_model('best_model.h5')
@@ -194,16 +199,25 @@ def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
         csv_data.insert(0, [average / amount, min_value, max_value])
 
     # initializing pandas dataframe
-    dt = pandas.DataFrame(data=csv_data, index=range(1, 301),
-                          columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert'])
+    dt = pandas.DataFrame(
+        data=csv_data, 
+        index=range(1, 301),
+        columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert']
+    )
+    
+    # create the file structure
+    try:            
+        os.makedirs(f'csv_files/amount_{amount}/{LOG_NAME}')
+    except:
+        pass
 
     # saving to csv file
-    dt.to_csv(f'csv_files/amount_{amount}/{time.time()}/{maneuver.get_name()}.csv')
+    dt.to_csv(f'csv_files/amount_{amount}/{LOG_NAME}/{maneuver.get_name()}.csv') # /amount_{amount}/{int(time.time())}
 
 
 if __name__ == '__main__':
     # predict_partial_all(150, draw_plot=False)
     # predict_all(10)
     # test_KI(50)
-    for m in maneuvers:
-        create_excel_recognition_rate(m, 10)
+    for m in maneuvers[3:]:
+        create_excel_recognition_rate(m, 100)
