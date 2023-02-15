@@ -197,8 +197,8 @@ def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
     dt = pandas.DataFrame(data=csv_data, index=range(1, 301),
                           columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert'])
 
-    # saving to excel file
-    dt.to_excel(f'excel_files/amount_{amount}/{time.time()}/{maneuver.get_name()}.xlsx')
+    # saving to csv file
+    dt.to_csv(f'csv_files/amount_{amount}/{time.time()}/{maneuver.get_name()}.csv')
 
 
 if __name__ == '__main__':
@@ -206,4 +206,4 @@ if __name__ == '__main__':
     # predict_all(10)
     # test_KI(50)
     for m in maneuvers:
-        create_excel_recognition_rate(m, 100)
+        create_excel_recognition_rate(m, 10)
