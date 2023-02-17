@@ -8,6 +8,7 @@ from maneuver import Maneuver
 import pandas
 import time
 import os
+import scipy.stats as st
 
 
 # Name of the directory
@@ -181,22 +182,30 @@ def create_csv_recognition_rate(maneuver: Maneuver, amount: int) -> None:
 
     csv_data = []
     for length in range(300, 0, -1):
-        min_value = 1.1
-        max_value = -1
         average = 0
+        confidence_interval = []
 
         for rand_m in rand_man:
             tmp_m = rand_m.get_partial(length)
             tmp_man_arr = np.array([tmp_m.get_numpy_array()])
-            prob = model.predict(tmp_man_arr)[0][maneuver_index]
-            print(prob)
+            prob = model.predict(tmp_man_arr, verbose=0)[0][maneuver_index]
+            
+            # appending probability to get the confidence interval lateron
+            confidence_interval.append(prob)
 
             # setting data
             average += prob
-            min_value = min(min_value, prob)
-            max_value = max(max_value, prob)
 
-        csv_data.insert(0, [average / amount, min_value, max_value])
+        interval_min, interval_max = st.t.interval(
+            0.95, 
+            df=len(confidence_interval)-1,
+            loc=np.nanmean(confidence_interval),
+            scale=st.sem(confidence_interval, nan_policy='omit')
+        )
+        
+        print(interval_min, interval_max)
+
+        csv_data.insert(0, [average / amount, interval_min, interval_max])
 
     # initializing pandas dataframe
     dt = pandas.DataFrame(
@@ -205,7 +214,7 @@ def create_csv_recognition_rate(maneuver: Maneuver, amount: int) -> None:
         columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert']
     )
     
-    # create the file structure
+    # create the file structure if not existent
     try:            
         os.makedirs(f'csv_files/amount_{amount}/{LOG_NAME}')
     except:
