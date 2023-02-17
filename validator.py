@@ -9,6 +9,7 @@ import pandas
 import time
 import os
 import scipy.stats as st
+import math
 
 
 # Name of the directory
@@ -203,7 +204,8 @@ def create_csv_recognition_rate(maneuver: Maneuver, amount: int) -> None:
             scale=st.sem(confidence_interval, nan_policy='omit')
         )
         
-        print(interval_min, interval_max)
+        interval_min = interval_min if not math.isnan(interval_min) else average / amount
+        interval_max = interval_max if not math.isnan(interval_max) else average / amount
 
         csv_data.insert(0, [average / amount, interval_min, interval_max])
 
