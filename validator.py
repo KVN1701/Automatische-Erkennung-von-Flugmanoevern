@@ -79,11 +79,11 @@ def predict_single(maneuver: Maneuver, draw_plot: bool = True, allow_print: bool
 
     if pred_string == maneuver.get_name():
         if allow_print:
-            print(f'\nVorhersage: \033[92m{pred_string}\033[0m')
+            print(f'\nVorhersage: \033[92m{pred_string}\033[0m\n')
         return True
     else:
         if allow_print:
-            print(f'\nVorhersage: \033[31m{pred_string}\033[0m')
+            print(f'\nVorhersage: \033[31m{pred_string}\033[0m\n')
         return False
 
 
@@ -168,7 +168,7 @@ def predict_partial_all(amount_per_maneuver: int, draw_plot=True) -> None:
     print(t.draw())
 
 
-def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
+def create_csv_recognition_rate(maneuver: Maneuver, amount: int) -> None:
     """
     Creates an excel file containing values for a graph to display the prediction values for each length.
 
@@ -218,6 +218,7 @@ def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
 if __name__ == '__main__':
     # predict_partial_all(150, draw_plot=False)
     # predict_all(10)
+    # predict_all(10)
     # test_KI(50)
-    for m in maneuvers[3:]:
-        create_excel_recognition_rate(m, 100)
+    for m in maneuvers:
+        create_csv_recognition_rate(m, 100)
