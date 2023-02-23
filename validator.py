@@ -7,6 +7,13 @@ from texttable import Texttable
 from maneuver import Maneuver
 import pandas
 import time
+import os
+import scipy.stats as st
+import math
+
+
+# Name of the directory
+LOG_NAME = f'{int(time.time())}'
 
 # The model that will be used
 model = keras.models.load_model('best_model.h5')
@@ -74,11 +81,11 @@ def predict_single(maneuver: Maneuver, draw_plot: bool = True, allow_print: bool
 
     if pred_string == maneuver.get_name():
         if allow_print:
-            print(f'\nVorhersage: \033[92m{pred_string}\033[0m')
+            print(f'\nVorhersage: \033[92m{pred_string}\033[0m\n')
         return True
     else:
         if allow_print:
-            print(f'\nVorhersage: \033[31m{pred_string}\033[0m')
+            print(f'\nVorhersage: \033[31m{pred_string}\033[0m\n')
         return False
 
 
@@ -163,7 +170,7 @@ def predict_partial_all(amount_per_maneuver: int, draw_plot=True) -> None:
     print(t.draw())
 
 
-def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
+def create_csv_recognition_rate(maneuver: Maneuver, amount: int) -> None:
     """
     Creates an excel file containing values for a graph to display the prediction values for each length.
 
@@ -176,34 +183,53 @@ def create_excel_recognition_rate(maneuver: Maneuver, amount: int) -> None:
 
     csv_data = []
     for length in range(300, 0, -1):
-        min_value = 1.1
-        max_value = -1
         average = 0
+        confidence_interval = []
 
         for rand_m in rand_man:
             tmp_m = rand_m.get_partial(length)
             tmp_man_arr = np.array([tmp_m.get_numpy_array()])
-            prob = model.predict(tmp_man_arr)[0][maneuver_index]
-            print(prob)
+            prob = model.predict(tmp_man_arr, verbose=0)[0][maneuver_index]
+            
+            # appending probability to get the confidence interval lateron
+            confidence_interval.append(prob)
 
             # setting data
             average += prob
-            min_value = min(min_value, prob)
-            max_value = max(max_value, prob)
 
-        csv_data.insert(0, [average / amount, min_value, max_value])
+        interval_min, interval_max = st.t.interval(
+            0.95, 
+            df=len(confidence_interval)-1,
+            loc=np.nanmean(confidence_interval),
+            scale=st.sem(confidence_interval, nan_policy='omit')
+        )
+        
+        interval_min = interval_min if not math.isnan(interval_min) else average / amount
+        interval_max = interval_max if not math.isnan(interval_max) else average / amount
+
+        csv_data.insert(0, [average / amount, interval_min, interval_max])
 
     # initializing pandas dataframe
-    dt = pandas.DataFrame(data=csv_data, index=range(1, 301),
-                          columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert'])
+    dt = pandas.DataFrame(
+        data=csv_data, 
+        index=range(1, 301),
+        columns=['Durchschnittswert', 'Minimalwert', 'Maximalwert']
+    )
+    
+    # create the file structure if not existent
+    try:            
+        os.makedirs(f'csv_files/amount_{amount}/{LOG_NAME}')
+    except:
+        pass
 
-    # saving to a csv file
-    dt.to_excel(f'excel_files/{maneuver.get_name()}_{amount}_{int(time.time())}.xlsx')
+    # saving to csv file
+    dt.to_csv(f'csv_files/amount_{amount}/{LOG_NAME}/{maneuver.get_name()}.csv') # /amount_{amount}/{int(time.time())}
 
 
 if __name__ == '__main__':
     # predict_partial_all(150, draw_plot=False)
     # predict_all(10)
+    # predict_all(10)
     # test_KI(50)
     for m in maneuvers:
-        create_excel_recognition_rate(m, 100)
+        create_csv_recognition_rate(m, 100)
